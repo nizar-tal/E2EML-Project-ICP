@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editor
+.vscode/
+
+# macOS
+.DS_Store
+._*
+
+# Local environments and downloaded caches
+.venv/
+.env
+.cache/

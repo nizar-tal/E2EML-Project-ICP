@@ -1,0 +1,26 @@
+[
+  {
+    "name": "original_tesseract",
+    "enhancement": [],
+    "channels": "original",
+    "ocr": "tesseract"
+  },
+  {
+    "name": "bright_red_tesseract",
+    "enhancement": [{"type": "brightness", "amount": 20}],
+    "channels": ["red"],
+    "ocr": "tesseract"
+  },
+  {
+    "name": "contrast_red_green_easyocr",
+    "enhancement": [{"type": "contrast", "factor": 1.2}],
+    "channels": ["red", "green"],
+    "ocr": "easyocr"
+  },
+  {
+    "name": "sharpen_blue_easyocr",
+    "enhancement": [{"type": "sharpen", "amount": 1.0}],
+    "channels": ["blue"],
+    "ocr": "easyocr"
+  }
+]
