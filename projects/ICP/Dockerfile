@@ -22,7 +22,12 @@ RUN pip install --upgrade pip && \
     pip install -r requirements-icp.txt && \
     pip install jupyter
 
+COPY image.py .
+COPY ocr.py .
+COPY metrics.py .
+COPY pipeline_configs.json .
 COPY sample.ipynb .
+COPY ICP.ipynb .
 
 # Expose Jupyter port
 EXPOSE 8888
