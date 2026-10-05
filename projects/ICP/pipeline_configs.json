@@ -1,3 +1,5 @@
+// 10/04/2026: expanded config to 16 configurations
+
 [
   {
     "name": "original_tesseract",
@@ -6,9 +8,63 @@
     "ocr": "tesseract"
   },
   {
+    "name": "original_easyocr",
+    "enhancement": [],
+    "channels": "original",
+    "ocr": "easyocr"
+  },
+  {
+    "name": "red_tesseract",
+    "enhancement": [],
+    "channels": ["red"],
+    "ocr": "tesseract"
+  },
+  {
+    "name": "red_easyocr",
+    "enhancement": [],
+    "channels": ["red"],
+    "ocr": "easyocr"
+  },
+  {
+    "name": "green_tesseract",
+    "enhancement": [],
+    "channels": ["green"],
+    "ocr": "tesseract"
+  },
+  {
+    "name": "green_easyocr",
+    "enhancement": [],
+    "channels": ["green"],
+    "ocr": "easyocr"
+  },
+  {
+    "name": "blue_tesseract",
+    "enhancement": [],
+    "channels": ["blue"],
+    "ocr": "tesseract"
+  },
+  {
+    "name": "blue_easyocr",
+    "enhancement": [],
+    "channels": ["blue"],
+    "ocr": "easyocr"
+  },
+  {
     "name": "bright_red_tesseract",
     "enhancement": [{"type": "brightness", "amount": 20}],
     "channels": ["red"],
+    "ocr": "tesseract"
+  },
+  {
+    "name": "bright_red_easyocr",
+    "enhancement": [{"type": "brightness", "amount": 20}],
+    "channels": ["red"],
+    "ocr": "easyocr"
+  },
+  {
+    "name": "contrast_red_green_tesseract",
+    "enhancement": [{"type": "contrast", "factor": 1.2}],
+    "channels": ["red", "green"],
     "ocr": "tesseract"
   },
   {
@@ -18,9 +74,27 @@
     "ocr": "easyocr"
   },
   {
+    "name": "sharpen_blue_tesseract",
+    "enhancement": [{"type": "sharpen", "amount": 1.0}],
+    "channels": ["blue"],
+    "ocr": "tesseract"
+  },
+  {
     "name": "sharpen_blue_easyocr",
     "enhancement": [{"type": "sharpen", "amount": 1.0}],
     "channels": ["blue"],
+    "ocr": "easyocr"
+  },
+  {
+    "name": "bright_contrast_original_tesseract",
+    "enhancement": [{"type": "brightness", "amount": 20}, {"type": "contrast", "factor": 1.2}],
+    "channels": "original",
+    "ocr": "tesseract"
+  },
+  {
+    "name": "bright_contrast_original_easyocr",
+    "enhancement": [{"type": "brightness", "amount": 20}, {"type": "contrast", "factor": 1.2}],
+    "channels": "original",
     "ocr": "easyocr"
   }
 ]

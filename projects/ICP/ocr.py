@@ -1,4 +1,5 @@
 # Ishan Pathak
+# Nizar Talty
 
 # 10/4/2026
 # run OCR on a processed image (step 3 of the pipeline)
@@ -14,7 +15,8 @@ import pytesseract
 EASYOCR_LANGS = ["ch_sim", "en"]
 TESSERACT_LANG = "chi_sim+eng"
 
-# EasyOCR's Reader is slow to build, so make it once and reuse it.
+# EasyOCR's Reader is slow to build, so make it once and reuse it
+# not sure if we should include it in the pipeline timing but for now excluded
 _easyocr_reader = None
 
 
@@ -28,20 +30,38 @@ def get_easyocr_reader():
 
 
 def run_ocr(image, engine):
-    """Read the text on one processed image with the engine named in the config."""
+    return run_ocr_detailed(image, engine)["text"]
+
+
+def run_ocr_detailed(image, engine):
     if not isinstance(image, np.ndarray) or image.dtype != np.uint8:
         raise ValueError("image must be a uint8 NumPy array")
     if image.ndim not in (2, 3) or (image.ndim == 3 and image.shape[2] != 3):
         raise ValueError("image must have shape (H, W) or (H, W, 3)")
 
     if engine == "easyocr":
-        # process_image returns RGB; EasyOCR reads a 3-channel array as BGR
         if image.ndim == 3:
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        return "\n".join(get_easyocr_reader().readtext(image, detail=0))
+        # get the deetails using detail=1 (prev detail=0)
+        results = get_easyocr_reader().readtext(image, detail=1, paragraph=False)
+        detections = []
+        # fetch the detections
+        for corners, text, confidence in results:
+            xs = [point[0] for point in corners]
+            ys = [point[1] for point in corners]
+            detections.append({"text": text, "box": [min(xs), min(ys), max(xs), max(ys)], "confidence": float(confidence)})
+        return {"text": "\n".join(item["text"] for item in detections), "detections": detections}
 
     if engine == "tesseract":
         pytesseract.pytesseract.tesseract_cmd = os.environ.get("TESSERACT_CMD") or "tesseract"
-        return pytesseract.image_to_string(image, lang=TESSERACT_LANG)
+        data = pytesseract.image_to_data(image, lang=TESSERACT_LANG, output_type=pytesseract.Output.DICT)
+        detections = []
+        for i, text in enumerate(data["text"]):
+            if not text.strip():
+                continue
+            left, top, width, height = (data[key][i] for key in ("left", "top", "width", "height"))
+            confidence = float(data["conf"][i])
+            detections.append({"text": text, "box": [left, top, left + width, top + height], "confidence": confidence / 100 if confidence >= 0 else None})
+        return {"text": "\n".join(item["text"] for item in detections), "detections": detections}
 
-    raise ValueError(f"unknown ocr engine: {engine!r}")
+    else: print(f"unknown ocr engine: {engine!r}")
