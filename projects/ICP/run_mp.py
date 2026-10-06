@@ -7,8 +7,8 @@ import sys
 import time
 import multiprocessing as mp
 
-# 500-image benchmark on Nizar's pipeline.
-# Image processing, OCR, and scores come from image.py, ocr.py, and metrics.py.
+# Latency baselines use 500 images. Multiprocessing Tesseract and GPU EasyOCR
+# run every config on the full dataset. Scores come from Nizar's metrics.py.
 # s/img is wall-clock seconds divided by the image count.
 # Throughput is images per wall-clock second.
 
@@ -30,14 +30,16 @@ def load_configs():
     return json.loads(raw)
 
 
-def load_indices():
+def load_indices(full):
     from datasets import load_dataset
     print("loading dataset...", flush=True)
     ds = load_dataset("lansinuote/ocr_id_card", split="train")
     n = len(ds)
-    k = min(SAMPLE_SIZE, n)
-    indices = random.Random(SEED).sample(range(n), k)
-    print(f"images: {n}  using: {k}", flush=True)
+    if full:
+        indices = list(range(n))
+    else:
+        indices = random.Random(SEED).sample(range(n), min(SAMPLE_SIZE, n))
+    print(f"images: {n}  using: {len(indices)}", flush=True)
     return ds, indices
 
 
@@ -184,7 +186,8 @@ def write_job(name, rows):
 def run_job(job):
     global _ds
     configs = load_configs()
-    _ds, indices = load_indices()
+    full = job in {"metrics-tesseract", "easyocr-gpu"}
+    _ds, indices = load_indices(full)
     if job == "tesseract-serial":
         rows = [run_config(find_config(configs, "original_tesseract"), indices, parallel=False)]
     elif job == "metrics-tesseract":
@@ -221,7 +224,7 @@ def merge():
         _latency_row("easyocr_gpu", original_gpu),
     ]
     metrics = tesseract + gpu
-    with open("results_500_latency.csv", "w") as handle:
+    with open("results_latency.csv", "w") as handle:
         handle.write("mode,engine,n_images,s_per_img,throughput_img_per_s,total_s,text_recall,location_recall,exact_field_recall,mean_confidence,confidence_count\n")
         for row in latency:
             confidence = "" if row["mean_confidence"] is None else f'{row["mean_confidence"]:.4f}'
@@ -230,7 +233,7 @@ def merge():
                 f'{row["throughput_img_per_s"]:.4f},{row["total_s"]:.1f},{row["text_recall"]:.4f},'
                 f'{row["location_recall"]:.4f},{row["exact_field_recall"]:.4f},{confidence},{row["confidence_count"]}\n'
             )
-    with open("results_500_metrics.csv", "w") as handle:
+    with open("results_metrics.csv", "w") as handle:
         handle.write("config,engine,n_images,text_recall,location_recall,exact_field_recall,mean_confidence,confidence_count,s_per_img,throughput_img_per_s,total_s\n")
         for row in metrics:
             confidence = "" if row["mean_confidence"] is None else f'{row["mean_confidence"]:.4f}'
@@ -239,7 +242,7 @@ def merge():
                 f'{row["location_recall"]:.4f},{row["exact_field_recall"]:.4f},{confidence},'
                 f'{row["confidence_count"]},{row["s_per_img"]:.4f},{row["throughput_img_per_s"]:.4f},{row["total_s"]:.1f}\n'
             )
-    with open("results_500_per_class.csv", "w") as handle:
+    with open("results_per_class.csv", "w") as handle:
         handle.write("config,engine,field,text_hits,location_hits,exact_hits,total\n")
         for row in metrics:
             for field in FIELDS:
@@ -247,11 +250,11 @@ def merge():
                 location_hits = row["per_class_location"].get(field, [0, 0])[0]
                 exact_hits = row["per_class_exact"].get(field, [0, 0])[0]
                 handle.write(f'{row["name"]},{row["engine"]},{field},{text_hits},{location_hits},{exact_hits},{total}\n')
-    print("\nlatency comparison (same 500 images, original image)", flush=True)
-    print(f'{"mode":<32}{"s/img":>10}{"img/s":>10}{"total_s":>10}{"text":>8}{"location":>10}{"exact":>8}{"conf":>8}', flush=True)
+    print("\nlatency comparison (original image; serial and CPU are 500 images, the other two are the full set)", flush=True)
+    print(f'{"mode":<32}{"n":>8}{"s/img":>10}{"img/s":>10}{"total_s":>10}{"text":>8}{"location":>10}{"exact":>8}{"conf":>8}', flush=True)
     for row in latency:
         print(
-            f'{row["mode"]:<32}{row["s_per_img"]:>10.4f}{row["throughput_img_per_s"]:>10.2f}'
+            f'{row["mode"]:<32}{row["n_images"]:>8}{row["s_per_img"]:>10.4f}{row["throughput_img_per_s"]:>10.2f}'
             f'{row["total_s"]:>10.1f}{row["text_recall"]:>8.3f}{row["location_recall"]:>10.3f}'
             f'{row["exact_field_recall"]:>8.3f}{_conf(row["mean_confidence"]):>8}',
             flush=True,
@@ -259,7 +262,7 @@ def merge():
     print("\nall configs", flush=True)
     print_metrics(metrics)
     print_fields(metrics)
-    print("DONE -> results_500_latency.csv results_500_metrics.csv results_500_per_class.csv", flush=True)
+    print("DONE -> results_latency.csv results_metrics.csv results_per_class.csv", flush=True)
 
 
 def main():
@@ -272,7 +275,7 @@ def main():
     if args.job:
         run_job(args.job)
         return
-    for job in ("tesseract-serial", "metrics-tesseract", "easyocr-cpu", "easyocr-gpu"):
+    for job in ("tesseract-serial", "easyocr-cpu", "metrics-tesseract", "easyocr-gpu"):
         print(f"\n=== {job} ===", flush=True)
         subprocess.check_call([sys.executable, os.path.abspath(__file__), "--job", job])
     merge()
