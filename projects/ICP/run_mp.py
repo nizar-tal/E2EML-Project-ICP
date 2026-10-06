@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import random
+import statistics
 import subprocess
 import sys
 import time
@@ -62,13 +63,51 @@ def _pack(result):
     }
 
 
+def _character_errors(ocr_result, annotations):
+    # Edit distance on the text inside each ground-truth box. A field that is one
+    # character off still counts here; exact recall does not.
+    from Levenshtein import distance
+    from metrics import _area, _clean, _intersection, _normalize
+    fields = [field for field in annotations if _clean(field["word"])]
+    detections = [item for item in ocr_result["detections"] if str(item["text"]).strip() and _area(item["box"]) > 0]
+    groups = [[] for _ in fields]
+    for detection in detections:
+        candidates = []
+        for index, field in enumerate(fields):
+            overlap = _intersection(detection["box"], field["box"])
+            scale = min(_area(detection["box"]), _area(field["box"]))
+            if scale and overlap / scale >= 0.5:
+                candidates.append((overlap / scale, index))
+        if candidates:
+            groups[max(candidates)[2]].append(detection)
+    errors = 0
+    total = 0
+    for field, group in zip(fields, groups):
+        reference = _normalize(field["word"])
+        if not reference:
+            continue
+        ordered = sorted(group, key=lambda item: (item["box"][1], item["box"][0]))
+        hypothesis = _normalize("".join(item["text"] for item in ordered))
+        errors += distance(hypothesis, reference)
+        total += len(reference)
+    return errors, total
+
+
 def _score(i):
     from image import process_image
     from ocr import run_ocr_detailed
     from metrics import detailed_ocr_metrics
     row = _ds[i]
+    started = time.perf_counter()
     ocr_result = run_ocr_detailed(process_image(row["image"], _current), _current["ocr"])
-    return _pack(detailed_ocr_metrics(ocr_result, row["ocr"]))
+    result = detailed_ocr_metrics(ocr_result, row["ocr"])
+    char_errors, char_total = _character_errors(ocr_result, row["ocr"])
+    packed = _pack(result)
+    packed["latency_s"] = time.perf_counter() - started
+    packed["image_recall"] = result["recall"]
+    packed["char_errors"] = char_errors
+    packed["char_total"] = char_total
+    return packed
 
 
 def _accumulate(parts, cfg, elapsed):
@@ -91,6 +130,10 @@ def _accumulate(parts, cfg, elapsed):
                 accumulated[1] += counts[1]
     n_fields = totals["n_fields"]
     n_images = len(parts)
+    latencies = [part["latency_s"] for part in parts]
+    recalls = [part["image_recall"] for part in parts]
+    char_errors = sum(part["char_errors"] for part in parts)
+    char_total = sum(part["char_total"] for part in parts)
     return {
         "name": cfg["name"],
         "engine": cfg["ocr"],
@@ -106,6 +149,9 @@ def _accumulate(parts, cfg, elapsed):
         "confidence_count": totals["confidence_count"],
         "s_per_img": elapsed / n_images if n_images else 0.0,
         "throughput_img_per_s": n_images / elapsed if elapsed else 0.0,
+        "latency_std_s": statistics.pstdev(latencies) if len(latencies) > 1 else 0.0,
+        "recall_std": statistics.pstdev(recalls) if len(recalls) > 1 else 0.0,
+        "character_error_rate": char_errors / char_total if char_total else 0.0,
         "total_s": elapsed,
         "per_class": per_class,
         "per_class_location": per_class_location,
@@ -155,12 +201,17 @@ def _conf(value):
 
 
 def print_metrics(rows):
-    print(f'{"config":<32}{"engine":<11}{"text":>8}{"location":>10}{"exact":>8}{"conf":>8}{"n_conf":>9}{"s/img":>9}{"img/s":>9}{"total_s":>10}', flush=True)
+    print(
+        f'{"config":<32}{"engine":<11}{"text":>8}{"r_std":>8}{"location":>10}{"exact":>8}{"cer":>8}'
+        f'{"conf":>8}{"n_conf":>9}{"s/img":>9}{"l_std":>9}{"img/s":>9}{"total_s":>10}',
+        flush=True,
+    )
     for row in rows:
         print(
-            f'{row["name"]:<32}{row["engine"]:<11}{row["text_recall"]:>8.3f}{row["location_recall"]:>10.3f}'
-            f'{row["exact_field_recall"]:>8.3f}{_conf(row["mean_confidence"]):>8}{row["confidence_count"]:>9}'
-            f'{row["s_per_img"]:>9.3f}{row["throughput_img_per_s"]:>9.2f}{row["total_s"]:>10.1f}',
+            f'{row["name"]:<32}{row["engine"]:<11}{row["text_recall"]:>8.3f}{row["recall_std"]:>8.3f}'
+            f'{row["location_recall"]:>10.3f}{row["exact_field_recall"]:>8.3f}{row["character_error_rate"]:>8.3f}'
+            f'{_conf(row["mean_confidence"]):>8}{row["confidence_count"]:>9}'
+            f'{row["s_per_img"]:>9.3f}{row["latency_std_s"]:>9.3f}{row["throughput_img_per_s"]:>9.2f}{row["total_s"]:>10.1f}',
             flush=True,
         )
 
@@ -206,8 +257,8 @@ def run_job(job):
     write_job(job, rows)
 
 
-def _latency_row(mode, row):
-    return {"mode": mode, **row}
+def _latency_row(mode, row, speedup):
+    return {"mode": mode, "speedup": speedup, **row}
 
 
 def merge():
@@ -217,30 +268,33 @@ def merge():
     gpu = json.load(open("results_job_easyocr-gpu.json"))
     original_mp = next(row for row in tesseract if row["name"] == "original_tesseract")
     original_gpu = next(row for row in gpu if row["name"] == "original_easyocr")
+    tesseract_speedup = serial[0]["s_per_img"] / original_mp["s_per_img"] if original_mp["s_per_img"] else 0.0
+    easyocr_speedup = cpu[0]["s_per_img"] / original_gpu["s_per_img"] if original_gpu["s_per_img"] else 0.0
     latency = [
-        _latency_row("tesseract_no_multiprocessing", serial[0]),
-        _latency_row("tesseract_multiprocessing", original_mp),
-        _latency_row("easyocr_no_gpu", cpu[0]),
-        _latency_row("easyocr_gpu", original_gpu),
+        _latency_row("tesseract_no_multiprocessing", serial[0], 1.0),
+        _latency_row("tesseract_multiprocessing", original_mp, tesseract_speedup),
+        _latency_row("easyocr_no_gpu", cpu[0], 1.0),
+        _latency_row("easyocr_gpu", original_gpu, easyocr_speedup),
     ]
     metrics = tesseract + gpu
     with open("results_latency.csv", "w") as handle:
-        handle.write("mode,engine,n_images,s_per_img,throughput_img_per_s,total_s,text_recall,location_recall,exact_field_recall,mean_confidence,confidence_count\n")
+        handle.write("mode,engine,n_images,s_per_img,latency_std_s,throughput_img_per_s,speedup,total_s,text_recall,recall_std,location_recall,exact_field_recall,character_error_rate,mean_confidence,confidence_count\n")
         for row in latency:
             confidence = "" if row["mean_confidence"] is None else f'{row["mean_confidence"]:.4f}'
             handle.write(
-                f'{row["mode"]},{row["engine"]},{row["n_images"]},{row["s_per_img"]:.4f},'
-                f'{row["throughput_img_per_s"]:.4f},{row["total_s"]:.1f},{row["text_recall"]:.4f},'
-                f'{row["location_recall"]:.4f},{row["exact_field_recall"]:.4f},{confidence},{row["confidence_count"]}\n'
+                f'{row["mode"]},{row["engine"]},{row["n_images"]},{row["s_per_img"]:.4f},{row["latency_std_s"]:.4f},'
+                f'{row["throughput_img_per_s"]:.4f},{row["speedup"]:.2f},{row["total_s"]:.1f},{row["text_recall"]:.4f},'
+                f'{row["recall_std"]:.4f},{row["location_recall"]:.4f},{row["exact_field_recall"]:.4f},'
+                f'{row["character_error_rate"]:.4f},{confidence},{row["confidence_count"]}\n'
             )
     with open("results_metrics.csv", "w") as handle:
-        handle.write("config,engine,n_images,text_recall,location_recall,exact_field_recall,mean_confidence,confidence_count,s_per_img,throughput_img_per_s,total_s\n")
+        handle.write("config,engine,n_images,text_recall,recall_std,location_recall,exact_field_recall,character_error_rate,mean_confidence,confidence_count,s_per_img,latency_std_s,throughput_img_per_s,total_s\n")
         for row in metrics:
             confidence = "" if row["mean_confidence"] is None else f'{row["mean_confidence"]:.4f}'
             handle.write(
-                f'{row["name"]},{row["engine"]},{row["n_images"]},{row["text_recall"]:.4f},'
-                f'{row["location_recall"]:.4f},{row["exact_field_recall"]:.4f},{confidence},'
-                f'{row["confidence_count"]},{row["s_per_img"]:.4f},{row["throughput_img_per_s"]:.4f},{row["total_s"]:.1f}\n'
+                f'{row["name"]},{row["engine"]},{row["n_images"]},{row["text_recall"]:.4f},{row["recall_std"]:.4f},'
+                f'{row["location_recall"]:.4f},{row["exact_field_recall"]:.4f},{row["character_error_rate"]:.4f},{confidence},'
+                f'{row["confidence_count"]},{row["s_per_img"]:.4f},{row["latency_std_s"]:.4f},{row["throughput_img_per_s"]:.4f},{row["total_s"]:.1f}\n'
             )
     with open("results_per_class.csv", "w") as handle:
         handle.write("config,engine,field,text_hits,location_hits,exact_hits,total\n")
@@ -251,12 +305,12 @@ def merge():
                 exact_hits = row["per_class_exact"].get(field, [0, 0])[0]
                 handle.write(f'{row["name"]},{row["engine"]},{field},{text_hits},{location_hits},{exact_hits},{total}\n')
     print("\nlatency comparison (original image; serial and CPU are 500 images, the other two are the full set)", flush=True)
-    print(f'{"mode":<32}{"n":>8}{"s/img":>10}{"img/s":>10}{"total_s":>10}{"text":>8}{"location":>10}{"exact":>8}{"conf":>8}', flush=True)
+    print(f'{"mode":<32}{"n":>8}{"s/img":>10}{"l_std":>10}{"img/s":>10}{"speedup":>9}{"text":>8}{"r_std":>8}{"cer":>8}', flush=True)
     for row in latency:
         print(
-            f'{row["mode"]:<32}{row["n_images"]:>8}{row["s_per_img"]:>10.4f}{row["throughput_img_per_s"]:>10.2f}'
-            f'{row["total_s"]:>10.1f}{row["text_recall"]:>8.3f}{row["location_recall"]:>10.3f}'
-            f'{row["exact_field_recall"]:>8.3f}{_conf(row["mean_confidence"]):>8}',
+            f'{row["mode"]:<32}{row["n_images"]:>8}{row["s_per_img"]:>10.4f}{row["latency_std_s"]:>10.4f}'
+            f'{row["throughput_img_per_s"]:>10.2f}{row["speedup"]:>9.2f}{row["text_recall"]:>8.3f}'
+            f'{row["recall_std"]:>8.3f}{row["character_error_rate"]:>8.3f}',
             flush=True,
         )
     print("\nall configs", flush=True)
