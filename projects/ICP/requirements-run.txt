@@ -1,8 +1,0 @@
-torch
-torchvision
-easyocr
-pytesseract
-opencv-python-headless
-numpy
-datasets
-python-Levenshtein
