@@ -67,7 +67,7 @@ def _character_errors(ocr_result, annotations):
     # Edit distance on the text inside each ground-truth box. A field that is one
     # character off still counts here; exact recall does not.
     from Levenshtein import distance
-    from metrics import _area, _clean, _intersection, _normalize
+    from metrics import _area, _clean, _intersection, _iou, _normalize
     fields = [field for field in annotations if _clean(field["word"])]
     detections = [item for item in ocr_result["detections"] if str(item["text"]).strip() and _area(item["box"]) > 0]
     groups = [[] for _ in fields]
@@ -77,7 +77,7 @@ def _character_errors(ocr_result, annotations):
             overlap = _intersection(detection["box"], field["box"])
             scale = min(_area(detection["box"]), _area(field["box"]))
             if scale and overlap / scale >= 0.5:
-                candidates.append((overlap / scale, index))
+                candidates.append((overlap / scale, _iou(detection["box"], field["box"]), index))
         if candidates:
             groups[max(candidates)[2]].append(detection)
     errors = 0
