@@ -8,8 +8,8 @@ import sys
 import time
 import multiprocessing as mp
 
-# Latency baselines use 500 images. Multiprocessing Tesseract and GPU EasyOCR
-# run every config on the full dataset. Scores come from Nizar's metrics.py.
+# Every mode uses the same 500 images and every config for that engine.
+# Scores come from Nizar's metrics.py.
 # s/img is wall-clock seconds divided by the image count.
 # Throughput is images per wall-clock second.
 
@@ -31,15 +31,12 @@ def load_configs():
     return json.loads(raw)
 
 
-def load_indices(full):
+def load_indices():
     from datasets import load_dataset
     print("loading dataset...", flush=True)
     ds = load_dataset("lansinuote/ocr_id_card", split="train")
     n = len(ds)
-    if full:
-        indices = list(range(n))
-    else:
-        indices = random.Random(SEED).sample(range(n), min(SAMPLE_SIZE, n))
+    indices = random.Random(SEED).sample(range(n), min(SAMPLE_SIZE, n))
     print(f"images: {n}  using: {len(indices)}", flush=True)
     return ds, indices
 
@@ -237,16 +234,15 @@ def write_job(name, rows):
 def run_job(job):
     global _ds
     configs = load_configs()
-    full = job in {"metrics-tesseract", "easyocr-gpu"}
-    _ds, indices = load_indices(full)
+    _ds, indices = load_indices()
     if job == "tesseract-serial":
-        rows = [run_config(find_config(configs, "original_tesseract"), indices, parallel=False)]
+        rows = [run_config(cfg, indices, parallel=False) for cfg in configs if cfg["ocr"] == "tesseract"]
     elif job == "metrics-tesseract":
         rows = [run_config(cfg, indices, parallel=True) for cfg in configs if cfg["ocr"] == "tesseract"]
     elif job == "easyocr-cpu":
         os.environ["EASYOCR_GPU"] = "0"
         warmup_easyocr()
-        rows = [run_config(find_config(configs, "original_easyocr"), indices, parallel=False)]
+        rows = [run_config(cfg, indices, parallel=False) for cfg in configs if cfg["ocr"] == "easyocr"]
     elif job == "easyocr-gpu":
         os.environ["EASYOCR_GPU"] = "1"
         require_cuda()
@@ -261,61 +257,60 @@ def _latency_row(mode, row, speedup):
     return {"mode": mode, "speedup": speedup, **row}
 
 
+def _paired(baseline_rows, fast_rows, baseline_mode, fast_mode):
+    fast_by_name = {row["name"]: row for row in fast_rows}
+    paired = []
+    for baseline in baseline_rows:
+        fast = fast_by_name[baseline["name"]]
+        speedup = baseline["s_per_img"] / fast["s_per_img"] if fast["s_per_img"] else 0.0
+        paired.append(_latency_row(baseline_mode, baseline, 1.0))
+        paired.append(_latency_row(fast_mode, fast, speedup))
+    return paired
+
+
 def merge():
     serial = json.load(open("results_job_tesseract-serial.json"))
     tesseract = json.load(open("results_job_metrics-tesseract.json"))
     cpu = json.load(open("results_job_easyocr-cpu.json"))
     gpu = json.load(open("results_job_easyocr-gpu.json"))
-    original_mp = next(row for row in tesseract if row["name"] == "original_tesseract")
-    original_gpu = next(row for row in gpu if row["name"] == "original_easyocr")
-    tesseract_speedup = serial[0]["s_per_img"] / original_mp["s_per_img"] if original_mp["s_per_img"] else 0.0
-    easyocr_speedup = cpu[0]["s_per_img"] / original_gpu["s_per_img"] if original_gpu["s_per_img"] else 0.0
-    latency = [
-        _latency_row("tesseract_no_multiprocessing", serial[0], 1.0),
-        _latency_row("tesseract_multiprocessing", original_mp, tesseract_speedup),
-        _latency_row("easyocr_no_gpu", cpu[0], 1.0),
-        _latency_row("easyocr_gpu", original_gpu, easyocr_speedup),
-    ]
-    metrics = tesseract + gpu
+    latency = _paired(serial, tesseract, "tesseract_no_multiprocessing", "tesseract_multiprocessing")
+    latency += _paired(cpu, gpu, "easyocr_no_gpu", "easyocr_gpu")
     with open("results_latency.csv", "w") as handle:
-        handle.write("mode,engine,n_images,s_per_img,latency_std_s,throughput_img_per_s,speedup,total_s,text_recall,recall_std,location_recall,exact_field_recall,character_error_rate,mean_confidence,confidence_count\n")
+        handle.write("mode,config,engine,n_images,s_per_img,latency_std_s,throughput_img_per_s,speedup,total_s,text_recall,recall_std,location_recall,exact_field_recall,character_error_rate,mean_confidence,confidence_count\n")
         for row in latency:
             confidence = "" if row["mean_confidence"] is None else f'{row["mean_confidence"]:.4f}'
             handle.write(
-                f'{row["mode"]},{row["engine"]},{row["n_images"]},{row["s_per_img"]:.4f},{row["latency_std_s"]:.4f},'
+                f'{row["mode"]},{row["name"]},{row["engine"]},{row["n_images"]},{row["s_per_img"]:.4f},{row["latency_std_s"]:.4f},'
                 f'{row["throughput_img_per_s"]:.4f},{row["speedup"]:.2f},{row["total_s"]:.1f},{row["text_recall"]:.4f},'
                 f'{row["recall_std"]:.4f},{row["location_recall"]:.4f},{row["exact_field_recall"]:.4f},'
                 f'{row["character_error_rate"]:.4f},{confidence},{row["confidence_count"]}\n'
             )
     with open("results_metrics.csv", "w") as handle:
-        handle.write("config,engine,n_images,text_recall,recall_std,location_recall,exact_field_recall,character_error_rate,mean_confidence,confidence_count,s_per_img,latency_std_s,throughput_img_per_s,total_s\n")
-        for row in metrics:
+        handle.write("mode,config,engine,n_images,text_recall,recall_std,location_recall,exact_field_recall,character_error_rate,mean_confidence,confidence_count,s_per_img,latency_std_s,throughput_img_per_s,total_s\n")
+        for row in latency:
             confidence = "" if row["mean_confidence"] is None else f'{row["mean_confidence"]:.4f}'
             handle.write(
-                f'{row["name"]},{row["engine"]},{row["n_images"]},{row["text_recall"]:.4f},{row["recall_std"]:.4f},'
+                f'{row["mode"]},{row["name"]},{row["engine"]},{row["n_images"]},{row["text_recall"]:.4f},{row["recall_std"]:.4f},'
                 f'{row["location_recall"]:.4f},{row["exact_field_recall"]:.4f},{row["character_error_rate"]:.4f},{confidence},'
                 f'{row["confidence_count"]},{row["s_per_img"]:.4f},{row["latency_std_s"]:.4f},{row["throughput_img_per_s"]:.4f},{row["total_s"]:.1f}\n'
             )
     with open("results_per_class.csv", "w") as handle:
-        handle.write("config,engine,field,text_hits,location_hits,exact_hits,total\n")
-        for row in metrics:
+        handle.write("mode,config,engine,field,text_hits,location_hits,exact_hits,total\n")
+        for row in latency:
             for field in FIELDS:
                 text_hits, total = row["per_class"].get(field, [0, 0])
                 location_hits = row["per_class_location"].get(field, [0, 0])[0]
                 exact_hits = row["per_class_exact"].get(field, [0, 0])[0]
-                handle.write(f'{row["name"]},{row["engine"]},{field},{text_hits},{location_hits},{exact_hits},{total}\n')
-    print("\nlatency comparison (original image; serial and CPU are 500 images, the other two are the full set)", flush=True)
-    print(f'{"mode":<32}{"n":>8}{"s/img":>10}{"l_std":>10}{"img/s":>10}{"speedup":>9}{"text":>8}{"r_std":>8}{"cer":>8}', flush=True)
+                handle.write(f'{row["mode"]},{row["name"]},{row["engine"]},{field},{text_hits},{location_hits},{exact_hits},{total}\n')
+    print("\nlatency comparison (same 500 images, every config)", flush=True)
+    print(f'{"mode":<28}{"config":<32}{"n":>6}{"s/img":>8}{"img/s":>8}{"speedup":>9}{"text":>8}{"exact":>8}{"cer":>8}', flush=True)
     for row in latency:
         print(
-            f'{row["mode"]:<32}{row["n_images"]:>8}{row["s_per_img"]:>10.4f}{row["latency_std_s"]:>10.4f}'
-            f'{row["throughput_img_per_s"]:>10.2f}{row["speedup"]:>9.2f}{row["text_recall"]:>8.3f}'
-            f'{row["recall_std"]:>8.3f}{row["character_error_rate"]:>8.3f}',
+            f'{row["mode"]:<28}{row["name"]:<32}{row["n_images"]:>6}{row["s_per_img"]:>8.3f}'
+            f'{row["throughput_img_per_s"]:>8.2f}{row["speedup"]:>9.2f}{row["text_recall"]:>8.3f}'
+            f'{row["exact_field_recall"]:>8.3f}{row["character_error_rate"]:>8.3f}',
             flush=True,
         )
-    print("\nall configs", flush=True)
-    print_metrics(metrics)
-    print_fields(metrics)
     print("DONE -> results_latency.csv results_metrics.csv results_per_class.csv", flush=True)
 
 
