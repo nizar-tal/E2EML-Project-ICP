@@ -8,7 +8,9 @@ import sys
 import time
 import multiprocessing as mp
 
-# Every mode uses the same 500 images and every config for that engine.
+# Tesseract without multiprocessing and EasyOCR on CPU use 500 images, all configs,
+# to show those modes are too slow for the full set.
+# Tesseract with multiprocessing and EasyOCR on GPU use the full dataset, all configs.
 # Scores come from Nizar's metrics.py.
 # s/img is wall-clock seconds divided by the image count.
 # Throughput is images per wall-clock second.
@@ -31,12 +33,15 @@ def load_configs():
     return json.loads(raw)
 
 
-def load_indices():
+def load_indices(full):
     from datasets import load_dataset
     print("loading dataset...", flush=True)
     ds = load_dataset("lansinuote/ocr_id_card", split="train")
     n = len(ds)
-    indices = random.Random(SEED).sample(range(n), min(SAMPLE_SIZE, n))
+    if full:
+        indices = list(range(n))
+    else:
+        indices = random.Random(SEED).sample(range(n), min(SAMPLE_SIZE, n))
     print(f"images: {n}  using: {len(indices)}", flush=True)
     return ds, indices
 
@@ -234,7 +239,8 @@ def write_job(name, rows):
 def run_job(job):
     global _ds
     configs = load_configs()
-    _ds, indices = load_indices()
+    full = job in {"metrics-tesseract", "easyocr-gpu"}
+    _ds, indices = load_indices(full)
     if job == "tesseract-serial":
         rows = [run_config(cfg, indices, parallel=False) for cfg in configs if cfg["ocr"] == "tesseract"]
     elif job == "metrics-tesseract":
@@ -302,7 +308,7 @@ def merge():
                 location_hits = row["per_class_location"].get(field, [0, 0])[0]
                 exact_hits = row["per_class_exact"].get(field, [0, 0])[0]
                 handle.write(f'{row["mode"]},{row["name"]},{row["engine"]},{field},{text_hits},{location_hits},{exact_hits},{total}\n')
-    print("\nlatency comparison (same 500 images, every config)", flush=True)
+    print("\nlatency comparison (500 images for the slow modes, full dataset for multiprocessing and GPU)", flush=True)
     print(f'{"mode":<28}{"config":<32}{"n":>6}{"s/img":>8}{"img/s":>8}{"speedup":>9}{"text":>8}{"exact":>8}{"cer":>8}', flush=True)
     for row in latency:
         print(
