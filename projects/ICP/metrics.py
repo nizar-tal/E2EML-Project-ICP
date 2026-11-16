@@ -1,5 +1,6 @@
 import math
 import unicodedata
+from numbers import Real
 
 from PIL import Image, ImageDraw
 
@@ -133,3 +134,70 @@ def visualize_boxes(image, annotations, detections):
         box = detection["box"]
         draw.rectangle((box[0] + original.width, box[1], box[2] + original.width, box[3]), outline="red", width=2)
     return canvas
+
+
+# Required metrics deliberately do not use historical _normalize/casefold or IoU gating.
+def normalize(text):
+    return "".join(unicodedata.normalize("NFKC", "" if text is None else str(text)).split()).replace("x", "X")
+
+
+def enclosing_box(box):
+    if len(box) == 4 and all(isinstance(value, Real) for value in box):
+        result = [float(value) for value in box]
+    else:
+        result = [min(p[0] for p in box), min(p[1] for p in box), max(p[0] for p in box), max(p[1] for p in box)]
+    if not all(math.isfinite(value) for value in result) or result[2] < result[0] or result[3] < result[1]:
+        raise ValueError(f"Invalid box: {box}")
+    return result
+
+
+def assign_fields(detections, annotations):
+    groups = [[] for _ in annotations]
+    boxes = [enclosing_box(field["box"]) for field in annotations]
+    for detection in detections:
+        item = {**detection, "box": enclosing_box(detection["box"])}
+        overlaps = []
+        for box in boxes:
+            scale = min(_area(item["box"]), _area(box))
+            overlaps.append(_intersection(item["box"], box) / scale if scale else 0.0)
+        if overlaps:
+            # First annotation wins equal-overlap ties; input order breaks equal-position ties.
+            index = max(range(len(overlaps)), key=lambda i: overlaps[i])
+            if overlaps[index] >= 0.5:
+                groups[index].append(item)
+    return ["".join(item["text"] for item in sorted(group, key=lambda d: (d["box"][1], d["box"][0]))) for group in groups]
+
+
+def edit_distance(first, second):
+    previous = list(range(len(second) + 1))
+    for i, a in enumerate(first, 1):
+        current = [i]
+        for j, b in enumerate(second, 1):
+            current.append(min(current[-1] + 1, previous[j] + 1, previous[j - 1] + (a != b)))
+        previous = current
+    return previous[-1]
+
+
+def required_metrics(predictions, annotations):
+    if len(predictions) != len(annotations):
+        raise ValueError("One prediction is required per annotated field, including missing predictions as empty strings")
+    classes = [int(field["cls"]) for field in annotations]
+    if sorted(classes) != list(CLASS_NAMES):
+        raise ValueError("Expected exactly one annotation for each of the eight field classes")
+    counts = {name: [0, 0] for name in CLASS_NAMES.values()}
+    hits, cer_sum, nonempty, empty = [], 0.0, 0, 0
+    for prediction, field in zip(predictions, annotations):
+        predicted, reference = normalize(prediction), normalize(field["word"])
+        hit = predicted == reference
+        hits.append(hit)
+        if not reference:
+            empty += 1
+            continue
+        name = CLASS_NAMES[int(field["cls"])]
+        counts[name][0] += int(hit)
+        counts[name][1] += 1
+        nonempty += 1
+        cer_sum += edit_distance(predicted, reference) / len(reference)
+    return {"correct_fields": sum(v[0] for v in counts.values()), "nonempty_fields": nonempty,
+            "empty_reference_fields": empty, "cer_sum": cer_sum, "per_class": counts,
+            "card_correct": all(hits), "empty_reference_correct": sum(hits) - sum(v[0] for v in counts.values())}

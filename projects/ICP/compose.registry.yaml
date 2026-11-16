@@ -1,0 +1,19 @@
+services:
+  minio:
+    image: icp-minio:RELEASE.2025-04-22T22-12-26Z
+    build:
+      context: .
+      dockerfile: Dockerfile.registry
+    pull_policy: never
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:?Set MINIO_ACCESS_KEY in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:?Set MINIO_SECRET_KEY in .env}
+    ports:
+      - '127.0.0.1:19000:9000'
+      - '127.0.0.1:19001:9001'
+    volumes:
+      - registry-data:/data
+    restart: unless-stopped
+volumes:
+  registry-data:
