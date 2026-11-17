@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: icp-ocr
+  namespace: icp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: icp-ocr
+  template:
+    metadata:
+      labels:
+        app: icp-ocr
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+        - name: ocr
+          image: icp-ocr:dev
+          imagePullPolicy: Never
+          ports:
+            - name: grpc
+              containerPort: 50051
+            - name: metrics
+              containerPort: 8000
+          env:
+            - name: MINIO_ENDPOINT
+              value: http://minio:9000
+            - name: MINIO_BUCKET
+              value: icp-models
+            - name: MINIO_REGION
+              value: us-east-1
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-creds
+                  key: MINIO_ACCESS_KEY
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-creds
+                  key: MINIO_SECRET_KEY
+            - name: VARIANT
+              value: tesseract_default
+            - name: VARIANT_VERSION
+              value: "1"
+            - name: ICP_PATH
+              value: /app/icp
+            - name: MAX_BATCH
+              value: "1"
+            - name: BATCH_TIMEOUT_MS
+              value: "10"
+            - name: OMP_NUM_THREADS
+              value: "1"
+            - name: OMP_THREAD_LIMIT
+              value: "1"
+            - name: MKL_NUM_THREADS
+              value: "1"
+            - name: GRPC_THREADS
+              value: "256"
+          resources:
+            requests:
+              cpu: "1"
+              memory: 4Gi
+            limits:
+              cpu: "1"
+              memory: 4Gi
+          volumeMounts:
+            - name: models
+              mountPath: /models
+          startupProbe:
+            grpc:
+              port: 50051
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            grpc:
+              port: 50051
+          livenessProbe:
+            grpc:
+              port: 50051
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+      volumes:
+        - name: models
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: icp-ocr
+  namespace: icp
+spec:
+  clusterIP: None
+  selector:
+    app: icp-ocr
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: grpc
+    - name: metrics
+      port: 8000
+      targetPort: metrics

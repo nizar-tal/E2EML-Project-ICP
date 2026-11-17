@@ -1,0 +1,31 @@
+syntax = "proto3";
+package icp;
+
+service OCR {
+  rpc Extract (CardRequest) returns (CardResponse);
+}
+
+message CardRequest {
+  string card_id = 1;   // dataset index as string
+  bytes  image   = 2;   // PNG-encoded card image
+}
+
+message Assertions {
+  bool a1 = 1;  bool a2 = 2;  bool a3 = 3;  bool a4 = 4;  bool all = 5;
+}
+
+message Timing {
+  float queue_ms = 1;       // waiting in the batch queue
+  float preprocess_ms = 2;  // enhancement + channel selection
+  float ocr_ms = 3;         // OCR engine
+  float total_ms = 4;       // server-side, receive → reply
+}
+
+message CardResponse {
+  string card_id = 1;
+  map<string, string> fields = 2;  // name, gender, ethnicity, birth_year, birth_month, birth_day, address, id_number
+  Assertions assertions = 3;
+  Timing timing = 4;
+  string variant = 5;              // variant name that served this request
+  int32  batch_size = 6;           // size of the batch this request ran in
+}

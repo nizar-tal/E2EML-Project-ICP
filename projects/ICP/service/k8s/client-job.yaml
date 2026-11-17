@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: client-test
+  namespace: icp
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: client
+          image: icp-ocr:dev
+          imagePullPolicy: Never
+          command: ["python", "/app/client.py"]
+          args:
+            - --host
+            - dns:///icp-ocr.icp.svc.cluster.local:50051
+            - --lb
+            - round_robin
+            - --n
+            - "5"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: 2Gi
+            limits:
+              cpu: "1"
+              memory: 2Gi

@@ -1,0 +1,83 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: registry-fill
+  namespace: icp
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: fill
+          image: icp-ocr:dev
+          imagePullPolicy: Never
+          workingDir: /app/icp
+          env:
+            - name: MINIO_ENDPOINT
+              value: http://minio:9000
+            - name: MINIO_BUCKET
+              value: icp-models
+            - name: MINIO_REGION
+              value: us-east-1
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-creds
+                  key: MINIO_ACCESS_KEY
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-creds
+                  key: MINIO_SECRET_KEY
+          resources:
+            requests:
+              cpu: "2"
+              memory: 4Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          volumeMounts:
+            - name: models
+              mountPath: /tmp/models
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              python registry.py init
+              python registry.py provision-tesseract --model-dir /tmp/models/tess
+              python registry.py provision-easyocr --name easyocr_original --model-dir /tmp/models/easy
+              python - <<'PY'
+              import json, os, subprocess, sys
+              from pathlib import Path
+              from registry import connection, exists
+
+              client, bucket = connection()
+              variants = json.loads(Path("ocr_variants.json").read_text())
+              dirs = {
+                  "tesseract_default": "/tmp/models/tess",
+                  "tesseract_psm6": "/tmp/models/tess",
+                  "easyocr_original": "/tmp/models/easy",
+                  "easyocr_half": "/tmp/models/easy",
+              }
+              for item in variants:
+                  name, ver = item["name"], item["version"]
+                  key = f"variants/{name}/{ver}.json"
+                  if exists(client, bucket, key):
+                      print(f"skip existing {key}")
+                      continue
+                  model_dir = dirs[name]
+                  r = subprocess.run(
+                      [sys.executable, "registry.py", "upload",
+                       "--name", name, "--version", ver, "--model-dir", model_dir],
+                      check=False,
+                  )
+                  if r.returncode != 0:
+                      # race / already published
+                      if exists(client, bucket, key):
+                          print(f"skip existing {key}")
+                      else:
+                          raise SystemExit(r.returncode)
+              PY
+      volumes:
+        - name: models
+          emptyDir: {}
