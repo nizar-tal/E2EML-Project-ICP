@@ -1,0 +1,271 @@
+{
+  "name": "tesseract_psm6",
+  "version": "1",
+  "source": "tesseract-ocr/tessdata_fast, release 4.1.0, chi_sim.traineddata",
+  "engine": "tesseract",
+  "settings": {
+    "name": "tesseract_psm6",
+    "version": "1",
+    "source": "tesseract-ocr/tessdata_fast, release 4.1.0, chi_sim.traineddata",
+    "engine": "tesseract",
+    "language": "chi_sim",
+    "config": "--psm 6",
+    "scale": 1.0,
+    "enhancement": [],
+    "channels": "original",
+    "quantize": false,
+    "artifacts": [
+      "chi_sim.traineddata"
+    ]
+  },
+  "artifacts": [
+    {
+      "file": "chi_sim.traineddata",
+      "bytes": 2469156,
+      "key": "artifacts/tessdata_fast-4.1.0/chi_sim.traineddata"
+    }
+  ],
+  "artifact_sources": {
+    "chi_sim.traineddata": {
+      "repository": "tesseract-ocr/tessdata_fast",
+      "revision": "4.1.0",
+      "bytes": 2469156
+    }
+  },
+  "size_bytes": 2469156,
+  "size_definition": "Sum of unique referenced model-file bytes; excludes metadata, runtime, and cache",
+  "offline_test_accuracy": {
+    "status": "measured",
+    "metrics": {
+      "cards": 2000,
+      "card_correct": 0,
+      "correct_fields": 6582,
+      "nonempty_fields": 16000,
+      "cer_sum": 8014.005978743471,
+      "empty_reference_fields": 0,
+      "empty_reference_correct": 0,
+      "per_class": {
+        "name": [
+          10,
+          2000
+        ],
+        "gender": [
+          1425,
+          2000
+        ],
+        "ethnicity": [
+          1464,
+          2000
+        ],
+        "birth_year": [
+          1087,
+          2000
+        ],
+        "birth_month": [
+          685,
+          2000
+        ],
+        "birth_day": [
+          665,
+          2000
+        ],
+        "address": [
+          21,
+          2000
+        ],
+        "id_number": [
+          1225,
+          2000
+        ]
+      },
+      "assertions": {
+        "A1": 1393,
+        "A2": 272,
+        "A3": 342,
+        "A4": 1425,
+        "all": 240
+      },
+      "historical": {
+        "n_fields": 16000,
+        "n_exact": 11146,
+        "n_located": 12617,
+        "n_field_exact": 5466,
+        "confidence_sum": 21382.259999999966,
+        "confidence_count": 40630
+      },
+      "historical_per_class": {
+        "per_class": {
+          "name": [
+            466,
+            2000
+          ],
+          "gender": [
+            1450,
+            2000
+          ],
+          "ethnicity": [
+            1586,
+            2000
+          ],
+          "birth_year": [
+            1782,
+            2000
+          ],
+          "birth_month": [
+            1898,
+            2000
+          ],
+          "birth_day": [
+            1866,
+            2000
+          ],
+          "address": [
+            803,
+            2000
+          ],
+          "id_number": [
+            1295,
+            2000
+          ]
+        },
+        "per_class_location": {
+          "name": [
+            1949,
+            2000
+          ],
+          "gender": [
+            832,
+            2000
+          ],
+          "ethnicity": [
+            1840,
+            2000
+          ],
+          "birth_year": [
+            1760,
+            2000
+          ],
+          "birth_month": [
+            862,
+            2000
+          ],
+          "birth_day": [
+            1467,
+            2000
+          ],
+          "address": [
+            1942,
+            2000
+          ],
+          "id_number": [
+            1965,
+            2000
+          ]
+        },
+        "per_class_exact": {
+          "name": [
+            10,
+            2000
+          ],
+          "gender": [
+            522,
+            2000
+          ],
+          "ethnicity": [
+            1452,
+            2000
+          ],
+          "birth_year": [
+            1087,
+            2000
+          ],
+          "birth_month": [
+            563,
+            2000
+          ],
+          "birth_day": [
+            586,
+            2000
+          ],
+          "address": [
+            21,
+            2000
+          ],
+          "id_number": [
+            1225,
+            2000
+          ]
+        }
+      },
+      "field_exact_match": 0.411375,
+      "card_exact_match": 0.0,
+      "mean_field_cer": 0.500875373671467,
+      "class_exact_match": {
+        "name": 0.005,
+        "gender": 0.7125,
+        "ethnicity": 0.732,
+        "birth_year": 0.5435,
+        "birth_month": 0.3425,
+        "birth_day": 0.3325,
+        "address": 0.0105,
+        "id_number": 0.6125
+      },
+      "assertion_pass_rates": {
+        "A1": 0.6965,
+        "A2": 0.136,
+        "A3": 0.171,
+        "A4": 0.7125,
+        "all": 0.12
+      },
+      "historical_rates": {
+        "text_recall": 0.696625,
+        "location_recall": 0.7885625,
+        "exact_field_recall": 0.341625,
+        "mean_confidence": 0.5262677824267774
+      }
+    },
+    "provenance": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "summary_file": "tesseract_psm6.summary.json"
+  }
+}

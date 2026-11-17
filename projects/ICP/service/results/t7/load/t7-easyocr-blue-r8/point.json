@@ -1,0 +1,37 @@
+{
+  "tag": "t7-easyocr-blue-r8",
+  "variant": "blue_easyocr",
+  "replicas": 8,
+  "batch": 1,
+  "cores_per_replica": 1,
+  "cost": 8,
+  "rate": 6.0,
+  "duration_s": 90.0,
+  "warmup_s": 15.0,
+  "seed": 8001,
+  "start": 0,
+  "wall_s": 277.33283853530884,
+  "core_seconds": 2218.6627082824707,
+  "slo_ms": 1079.2528883990599,
+  "restarts_before": {
+    "icp-ocr-6f48fd65bd-79l94": 0,
+    "icp-ocr-6f48fd65bd-8bxsl": 0,
+    "icp-ocr-6f48fd65bd-8f2zn": 0,
+    "icp-ocr-6f48fd65bd-bwtr7": 0,
+    "icp-ocr-6f48fd65bd-dnlsx": 0,
+    "icp-ocr-6f48fd65bd-f4fqr": 0,
+    "icp-ocr-6f48fd65bd-r9gsv": 0,
+    "icp-ocr-6f48fd65bd-wbgt8": 0
+  },
+  "restarts_after": {
+    "icp-ocr-6f48fd65bd-79l94": 0,
+    "icp-ocr-6f48fd65bd-8bxsl": 0,
+    "icp-ocr-6f48fd65bd-8f2zn": 0,
+    "icp-ocr-6f48fd65bd-bwtr7": 0,
+    "icp-ocr-6f48fd65bd-dnlsx": 0,
+    "icp-ocr-6f48fd65bd-f4fqr": 0,
+    "icp-ocr-6f48fd65bd-r9gsv": 0,
+    "icp-ocr-6f48fd65bd-wbgt8": 0
+  },
+  "valid": true
+}

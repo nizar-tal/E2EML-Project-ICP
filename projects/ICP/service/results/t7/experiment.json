@@ -1,0 +1,152 @@
+{
+  "config": {
+    "deployments": [
+      {
+        "id": "baseline-r8",
+        "variant": "tesseract_default",
+        "replicas": 8
+      },
+      {
+        "id": "easyocr-blue-r8",
+        "variant": "blue_easyocr",
+        "replicas": 8
+      },
+      {
+        "id": "psm6-r8",
+        "variant": "tesseract_psm6",
+        "replicas": 8
+      },
+      {
+        "id": "psm6-blue-r8",
+        "variant": "blue_tesseract_psm6",
+        "replicas": 8
+      },
+      {
+        "id": "psm6-blue-r4",
+        "variant": "blue_tesseract_psm6",
+        "replicas": 4
+      },
+      {
+        "id": "baseline-r4",
+        "variant": "tesseract_default",
+        "replicas": 4
+      },
+      {
+        "id": "psm6-r4",
+        "variant": "tesseract_psm6",
+        "replicas": 4
+      }
+    ],
+    "ablations": [
+      {
+        "engine": "Tesseract PSM 6",
+        "original": "tesseract_psm6",
+        "blue": "blue_tesseract_psm6"
+      },
+      {
+        "engine": "EasyOCR (historical settings)",
+        "original": "original_easyocr",
+        "blue": "blue_easyocr"
+      }
+    ]
+  },
+  "variants": [
+    {
+      "name": "tesseract_default",
+      "version": "1",
+      "source": "tesseract-ocr/tessdata_fast, release 4.1.0, chi_sim.traineddata",
+      "engine": "tesseract",
+      "language": "chi_sim",
+      "config": "",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": "original",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata"
+      ]
+    },
+    {
+      "name": "tesseract_psm6",
+      "version": "1",
+      "source": "tesseract-ocr/tessdata_fast, release 4.1.0, chi_sim.traineddata",
+      "engine": "tesseract",
+      "language": "chi_sim",
+      "config": "--psm 6",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": "original",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata"
+      ]
+    },
+    {
+      "name": "blue_tesseract_psm6",
+      "version": "1",
+      "source": "tesseract-ocr/tessdata_fast, release 4.1.0, chi_sim.traineddata",
+      "engine": "tesseract",
+      "language": "chi_sim",
+      "config": "--psm 6",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": [
+        "blue"
+      ],
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata"
+      ]
+    },
+    {
+      "name": "blue_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": [
+        "blue"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "original_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": "original",
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    }
+  ],
+  "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+  "seed": 8001,
+  "SLO_ms": 1079.2528883990599,
+  "target_rps": 6.0
+}

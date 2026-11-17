@@ -1,0 +1,1372 @@
+{
+  "slice": "test",
+  "limit": null,
+  "cards": 2000,
+  "settings": [
+    {
+      "name": "original_tesseract",
+      "group": "original",
+      "version": "1",
+      "engine": "tesseract",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": "original",
+      "source": "Milestone 1 settings; current pinned runtime",
+      "language": "chi_sim+eng",
+      "config": "",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata",
+        "eng.traineddata"
+      ]
+    },
+    {
+      "name": "original_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": "original",
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "red_tesseract",
+      "group": "original",
+      "version": "1",
+      "engine": "tesseract",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": [
+        "red"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "language": "chi_sim+eng",
+      "config": "",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata",
+        "eng.traineddata"
+      ]
+    },
+    {
+      "name": "red_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": [
+        "red"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "green_tesseract",
+      "group": "original",
+      "version": "1",
+      "engine": "tesseract",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": [
+        "green"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "language": "chi_sim+eng",
+      "config": "",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata",
+        "eng.traineddata"
+      ]
+    },
+    {
+      "name": "green_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": [
+        "green"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "blue_tesseract",
+      "group": "original",
+      "version": "1",
+      "engine": "tesseract",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": [
+        "blue"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "language": "chi_sim+eng",
+      "config": "",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata",
+        "eng.traineddata"
+      ]
+    },
+    {
+      "name": "blue_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": [
+        "blue"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "bright_red_tesseract",
+      "group": "original",
+      "version": "1",
+      "engine": "tesseract",
+      "scale": 1.0,
+      "enhancement": [
+        {
+          "type": "brightness",
+          "amount": 20
+        }
+      ],
+      "channels": [
+        "red"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "language": "chi_sim+eng",
+      "config": "",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata",
+        "eng.traineddata"
+      ]
+    },
+    {
+      "name": "bright_red_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [
+        {
+          "type": "brightness",
+          "amount": 20
+        }
+      ],
+      "channels": [
+        "red"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "contrast_red_green_tesseract",
+      "group": "original",
+      "version": "1",
+      "engine": "tesseract",
+      "scale": 1.0,
+      "enhancement": [
+        {
+          "type": "contrast",
+          "factor": 1.2
+        }
+      ],
+      "channels": [
+        "red",
+        "green"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "language": "chi_sim+eng",
+      "config": "",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata",
+        "eng.traineddata"
+      ]
+    },
+    {
+      "name": "contrast_red_green_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [
+        {
+          "type": "contrast",
+          "factor": 1.2
+        }
+      ],
+      "channels": [
+        "red",
+        "green"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "sharpen_blue_tesseract",
+      "group": "original",
+      "version": "1",
+      "engine": "tesseract",
+      "scale": 1.0,
+      "enhancement": [
+        {
+          "type": "sharpen",
+          "amount": 1.0
+        }
+      ],
+      "channels": [
+        "blue"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "language": "chi_sim+eng",
+      "config": "",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata",
+        "eng.traineddata"
+      ]
+    },
+    {
+      "name": "sharpen_blue_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [
+        {
+          "type": "sharpen",
+          "amount": 1.0
+        }
+      ],
+      "channels": [
+        "blue"
+      ],
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "bright_contrast_original_tesseract",
+      "group": "original",
+      "version": "1",
+      "engine": "tesseract",
+      "scale": 1.0,
+      "enhancement": [
+        {
+          "type": "brightness",
+          "amount": 20
+        },
+        {
+          "type": "contrast",
+          "factor": 1.2
+        }
+      ],
+      "channels": "original",
+      "source": "Milestone 1 settings; current pinned runtime",
+      "language": "chi_sim+eng",
+      "config": "",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata",
+        "eng.traineddata"
+      ]
+    },
+    {
+      "name": "bright_contrast_original_easyocr",
+      "group": "original",
+      "version": "1",
+      "engine": "easyocr",
+      "scale": 1.0,
+      "enhancement": [
+        {
+          "type": "brightness",
+          "amount": 20
+        },
+        {
+          "type": "contrast",
+          "factor": 1.2
+        }
+      ],
+      "channels": "original",
+      "source": "Milestone 1 settings; current pinned runtime",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "standard",
+      "quantize": true,
+      "readtext": {},
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "tesseract_default",
+      "version": "1",
+      "source": "tesseract-ocr/tessdata_fast, release 4.1.0, chi_sim.traineddata",
+      "engine": "tesseract",
+      "language": "chi_sim",
+      "config": "",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": "original",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata"
+      ]
+    },
+    {
+      "name": "tesseract_psm6",
+      "version": "1",
+      "source": "tesseract-ocr/tessdata_fast, release 4.1.0, chi_sim.traineddata",
+      "engine": "tesseract",
+      "language": "chi_sim",
+      "config": "--psm 6",
+      "scale": 1.0,
+      "enhancement": [],
+      "channels": "original",
+      "quantize": false,
+      "artifacts": [
+        "chi_sim.traineddata"
+      ]
+    },
+    {
+      "name": "easyocr_original",
+      "version": "1",
+      "source": "EasyOCR official pretrained CRAFT and generation-2 Chinese simplified recognition weights",
+      "engine": "easyocr",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "zh_sim_g2",
+      "quantize": false,
+      "scale": 1.0,
+      "readtext": {
+        "decoder": "greedy",
+        "batch_size": 1,
+        "workers": 0,
+        "canvas_size": 2560,
+        "mag_ratio": 1.0
+      },
+      "enhancement": [],
+      "channels": "original",
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    },
+    {
+      "name": "easyocr_half",
+      "version": "1",
+      "source": "EasyOCR official pretrained CRAFT and generation-2 Chinese simplified recognition weights",
+      "engine": "easyocr",
+      "languages": [
+        "ch_sim",
+        "en"
+      ],
+      "detect_network": "craft",
+      "recog_network": "zh_sim_g2",
+      "quantize": false,
+      "scale": 0.5,
+      "readtext": {
+        "decoder": "greedy",
+        "batch_size": 1,
+        "workers": 0,
+        "canvas_size": 2560,
+        "mag_ratio": 1.0
+      },
+      "enhancement": [],
+      "channels": "original",
+      "artifacts": [
+        "craft_mlt_25k.pth",
+        "zh_sim_g2.pth"
+      ]
+    }
+  ],
+  "provenance": {
+    "original_tesseract": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        },
+        {
+          "file": "eng.traineddata",
+          "bytes": 4113088
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        },
+        "eng.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 4113088
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "original_easyocr": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "red_tesseract": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        },
+        {
+          "file": "eng.traineddata",
+          "bytes": 4113088
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        },
+        "eng.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 4113088
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "red_easyocr": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "green_tesseract": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        },
+        {
+          "file": "eng.traineddata",
+          "bytes": 4113088
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        },
+        "eng.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 4113088
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "green_easyocr": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "blue_tesseract": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        },
+        {
+          "file": "eng.traineddata",
+          "bytes": 4113088
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        },
+        "eng.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 4113088
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "blue_easyocr": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "bright_red_tesseract": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        },
+        {
+          "file": "eng.traineddata",
+          "bytes": 4113088
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        },
+        "eng.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 4113088
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "bright_red_easyocr": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "contrast_red_green_tesseract": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        },
+        {
+          "file": "eng.traineddata",
+          "bytes": 4113088
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        },
+        "eng.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 4113088
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "contrast_red_green_easyocr": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "sharpen_blue_tesseract": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        },
+        {
+          "file": "eng.traineddata",
+          "bytes": 4113088
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        },
+        "eng.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 4113088
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "sharpen_blue_easyocr": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "bright_contrast_original_tesseract": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        },
+        {
+          "file": "eng.traineddata",
+          "bytes": 4113088
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        },
+        "eng.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 4113088
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "bright_contrast_original_easyocr": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "tesseract_default": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "tesseract_psm6": {
+      "artifacts": [
+        {
+          "file": "chi_sim.traineddata",
+          "bytes": 2469156
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {
+        "chi_sim.traineddata": {
+          "repository": "tesseract-ocr/tessdata_fast",
+          "revision": "4.1.0",
+          "bytes": 2469156
+        }
+      },
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "easyocr_original": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    },
+    "easyocr_half": {
+      "artifacts": [
+        {
+          "file": "craft_mlt_25k.pth",
+          "bytes": 83152330
+        },
+        {
+          "file": "zh_sim_g2.pth",
+          "bytes": 21951421
+        }
+      ],
+      "device": "cpu",
+      "runtime": {
+        "python": "3.11.0rc1 (main, Jun 29 2026, 00:05:30) [GCC 11.4.0]",
+        "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35",
+        "machine": "x86_64",
+        "hardware": {
+          "processor": "x86_64",
+          "device": "cpu"
+        },
+        "packages": {
+          "numpy": "1.26.4",
+          "Pillow": "10.4.0",
+          "opencv-python-headless": "4.10.0.84",
+          "easyocr": "1.7.2",
+          "pytesseract": "0.3.13",
+          "torch": "2.7.1+cpu",
+          "torchvision": "0.22.1+cpu",
+          "datasets": "3.2.0",
+          "huggingface-hub": "0.27.1",
+          "pandas": "2.2.3",
+          "pyarrow": "17.0.0"
+        },
+        "tesseract": "4.1.1"
+      },
+      "artifact_sources": {},
+      "dataset_revision": "6a7fd6ba549e99b9a3517fc9a56c4e3377e43e05",
+      "dataset_split": "train",
+      "split_seed": 8001
+    }
+  },
+  "split_record": "/home/nt4cd/E2EML-Project-ICP/projects/ICP/splits.json"
+}

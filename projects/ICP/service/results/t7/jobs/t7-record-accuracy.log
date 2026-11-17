@@ -1,0 +1,4 @@
+Recorded measured test accuracy for variants/blue_tesseract_psm6/1.json
+Recorded measured test accuracy for variants/blue_easyocr/1.json
+Recorded measured test accuracy for variants/original_easyocr/1.json
+Registry ready: five recipes, including the original-image EasyOCR ablation control.

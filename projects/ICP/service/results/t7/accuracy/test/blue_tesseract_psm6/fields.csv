@@ -1,0 +1,9 @@
+﻿configuration,field,correct,total,exact_match
+blue_tesseract_psm6,name,83,2000,0.0415
+blue_tesseract_psm6,gender,1392,2000,0.696
+blue_tesseract_psm6,ethnicity,1433,2000,0.7165
+blue_tesseract_psm6,birth_year,1025,2000,0.5125
+blue_tesseract_psm6,birth_month,1185,2000,0.5925
+blue_tesseract_psm6,birth_day,1037,2000,0.5185
+blue_tesseract_psm6,address,17,2000,0.0085
+blue_tesseract_psm6,id_number,1239,2000,0.6195

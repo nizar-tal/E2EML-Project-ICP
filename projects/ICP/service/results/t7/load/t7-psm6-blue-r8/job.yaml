@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: lg-t7-psm6-blue-r8
+  namespace: icp
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 120
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: loadgen
+          image: icp-ocr:t7
+          imagePullPolicy: Never
+          command: ["python", "/app/loadgen.py"]
+          args:
+            - --host
+            - dns:///icp-ocr.icp.svc.cluster.local:50051
+            - --rate
+            - "6.0"
+            - --duration
+            - "90.0"
+            - --warmup
+            - "15.0"
+            - --arrival
+            - poisson
+            - --seed
+            - "8001"
+            - --start
+            - "0"
+            - --out
+            - /out
+            - --tag
+            - t7-psm6-blue-r8
+            - --splits
+            - /app/icp/splits.json
+            - --slo-ms
+            - "1079.2528883990599"
+          env:
+            - name: HF_HOME
+              value: /hf
+            - name: HF_DATASETS_CACHE
+              value: /hf
+            - name: TRANSFORMERS_CACHE
+              value: /hf
+            - name: TMPDIR
+              value: /out/.tmp
+          volumeMounts:
+            - name: out
+              mountPath: /out
+            - name: hf
+              mountPath: /hf
+          resources:
+            requests: {cpu: "1", memory: 4Gi}
+            limits: {cpu: "2", memory: 6Gi}
+      volumes:
+        - name: out
+          hostPath:
+            path: /home/cc/icp/t7/load/t7-psm6-blue-r8
+            type: DirectoryOrCreate
+        - name: hf
+          hostPath:
+            path: /home/cc/icp/cache/hf
+            type: DirectoryOrCreate

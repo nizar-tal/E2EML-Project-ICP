@@ -1,0 +1,42 @@
+{
+  "tag": "t7-psm6-blue-r8",
+  "seed": 8001,
+  "start": 0,
+  "rate": 6.0,
+  "duration_s": 90.0,
+  "warmup_s": 15.0,
+  "arrival": "poisson",
+  "host": "dns:///icp-ocr.icp.svc.cluster.local:50051",
+  "target_rate": 6.0,
+  "achieved_send_rate": 6.228571428571429,
+  "completed_rate": 6.366666666666666,
+  "sent": 654,
+  "completed_after_warmup": 573,
+  "errors": 0,
+  "p50_ms": 325.2737619986874,
+  "p95_ms": 417.72404739895126,
+  "p99_ms": 463.0734956398368,
+  "mean_queue_ms": 0.36828097948125105,
+  "mean_inference_ms": 288.222914777137,
+  "mean_network_ms": 2.998993368293049,
+  "slo_ms": 1079.2528883990599,
+  "slo_attainment": 1.0,
+  "assertion_pass": {
+    "all": 0.09773123909249563,
+    "a1": 0.6335078534031413,
+    "a2": 0.1343804537521815,
+    "a3": 0.20593368237347295,
+    "a4": 0.6544502617801047
+  },
+  "field_exact": {
+    "id_number": 0.5933682373472949,
+    "gender": 0.6527050610820244,
+    "birth_year": 0.5095986038394416,
+    "birth_month": 0.2094240837696335,
+    "birth_day": 0.17975567190226877
+  },
+  "send_lag_max_ms": 6.411182383516234,
+  "send_lag_ok": true,
+  "wall_s": 105.08132662799471,
+  "pool_size": 17500
+}

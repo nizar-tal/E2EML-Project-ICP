@@ -1,0 +1,107 @@
+{
+  "apiVersion": "batch/v1",
+  "kind": "Job",
+  "metadata": {
+    "name": "t7-record-accuracy",
+    "namespace": "icp"
+  },
+  "spec": {
+    "backoffLimit": 0,
+    "template": {
+      "spec": {
+        "restartPolicy": "Never",
+        "containers": [
+          {
+            "name": "t7",
+            "image": "icp-ocr:t7",
+            "imagePullPolicy": "Never",
+            "command": [
+              "python",
+              "/app/t7/t7.py",
+              "register",
+              "--publish",
+              "--work",
+              "/work"
+            ],
+            "env": [
+              {
+                "name": "MINIO_ENDPOINT",
+                "value": "http://minio:9000"
+              },
+              {
+                "name": "MINIO_BUCKET",
+                "value": "icp-models"
+              },
+              {
+                "name": "MINIO_REGION",
+                "value": "us-east-1"
+              },
+              {
+                "name": "MINIO_ACCESS_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "MINIO_ACCESS_KEY",
+                    "name": "minio-creds"
+                  }
+                }
+              },
+              {
+                "name": "MINIO_SECRET_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "MINIO_SECRET_KEY",
+                    "name": "minio-creds"
+                  }
+                }
+              },
+              {
+                "name": "HF_HOME",
+                "value": "/hf"
+              },
+              {
+                "name": "HF_DATASETS_CACHE",
+                "value": "/hf"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "1",
+                "memory": "4Gi"
+              },
+              "limits": {
+                "cpu": "2",
+                "memory": "6Gi"
+              }
+            },
+            "volumeMounts": [
+              {
+                "name": "work",
+                "mountPath": "/work"
+              },
+              {
+                "name": "hf",
+                "mountPath": "/hf"
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "name": "work",
+            "hostPath": {
+              "path": "/home/cc/icp/t7",
+              "type": "Directory"
+            }
+          },
+          {
+            "name": "hf",
+            "hostPath": {
+              "path": "/home/cc/icp/cache/hf",
+              "type": "Directory"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

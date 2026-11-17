@@ -1,0 +1,219 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "annotations": {
+      "deployment.kubernetes.io/revision": "43",
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"icp-ocr\",\"namespace\":\"icp\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"icp-ocr\"}},\"template\":{\"metadata\":{\"annotations\":{\"prometheus.io/port\":\"8000\",\"prometheus.io/scrape\":\"true\"},\"labels\":{\"app\":\"icp-ocr\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"MINIO_ENDPOINT\",\"value\":\"http://minio:9000\"},{\"name\":\"MINIO_BUCKET\",\"value\":\"icp-models\"},{\"name\":\"MINIO_REGION\",\"value\":\"us-east-1\"},{\"name\":\"MINIO_ACCESS_KEY\",\"valueFrom\":{\"secretKeyRef\":{\"key\":\"MINIO_ACCESS_KEY\",\"name\":\"minio-creds\"}}},{\"name\":\"MINIO_SECRET_KEY\",\"valueFrom\":{\"secretKeyRef\":{\"key\":\"MINIO_SECRET_KEY\",\"name\":\"minio-creds\"}}},{\"name\":\"VARIANT\",\"value\":\"tesseract_default\"},{\"name\":\"VARIANT_VERSION\",\"value\":\"1\"},{\"name\":\"ICP_PATH\",\"value\":\"/app/icp\"},{\"name\":\"MAX_BATCH\",\"value\":\"1\"},{\"name\":\"BATCH_TIMEOUT_MS\",\"value\":\"10\"},{\"name\":\"OMP_NUM_THREADS\",\"value\":\"1\"},{\"name\":\"OMP_THREAD_LIMIT\",\"value\":\"1\"},{\"name\":\"MKL_NUM_THREADS\",\"value\":\"1\"},{\"name\":\"GRPC_THREADS\",\"value\":\"256\"}],\"image\":\"icp-ocr:dev\",\"imagePullPolicy\":\"Never\",\"livenessProbe\":{\"failureThreshold\":6,\"grpc\":{\"port\":50051},\"periodSeconds\":20,\"timeoutSeconds\":5},\"name\":\"ocr\",\"ports\":[{\"containerPort\":50051,\"name\":\"grpc\"},{\"containerPort\":8000,\"name\":\"metrics\"}],\"readinessProbe\":{\"grpc\":{\"port\":50051}},\"resources\":{\"limits\":{\"cpu\":\"1\",\"memory\":\"4Gi\"},\"requests\":{\"cpu\":\"1\",\"memory\":\"4Gi\"}},\"startupProbe\":{\"failureThreshold\":60,\"grpc\":{\"port\":50051},\"periodSeconds\":5},\"volumeMounts\":[{\"mountPath\":\"/models\",\"name\":\"models\"}]}],\"volumes\":[{\"emptyDir\":{},\"name\":\"models\"}]}}}}\n"
+    },
+    "creationTimestamp": "2026-11-17T02:37:04Z",
+    "generation": 79,
+    "name": "icp-ocr",
+    "namespace": "icp",
+    "resourceVersion": "43603",
+    "uid": "00d0b5db-4a10-49f9-96c8-8fba99189ea3"
+  },
+  "spec": {
+    "progressDeadlineSeconds": 600,
+    "replicas": 1,
+    "revisionHistoryLimit": 10,
+    "selector": {
+      "matchLabels": {
+        "app": "icp-ocr"
+      }
+    },
+    "strategy": {
+      "rollingUpdate": {
+        "maxSurge": "25%",
+        "maxUnavailable": "25%"
+      },
+      "type": "RollingUpdate"
+    },
+    "template": {
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/restartedAt": "2026-11-17T15:57:50Z",
+          "prometheus.io/port": "8000",
+          "prometheus.io/scrape": "true"
+        },
+        "labels": {
+          "app": "icp-ocr"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "env": [
+              {
+                "name": "MINIO_ENDPOINT",
+                "value": "http://minio:9000"
+              },
+              {
+                "name": "MINIO_BUCKET",
+                "value": "icp-models"
+              },
+              {
+                "name": "MINIO_REGION",
+                "value": "us-east-1"
+              },
+              {
+                "name": "MINIO_ACCESS_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "MINIO_ACCESS_KEY",
+                    "name": "minio-creds"
+                  }
+                }
+              },
+              {
+                "name": "MINIO_SECRET_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "MINIO_SECRET_KEY",
+                    "name": "minio-creds"
+                  }
+                }
+              },
+              {
+                "name": "VARIANT",
+                "value": "easyocr_half"
+              },
+              {
+                "name": "VARIANT_VERSION",
+                "value": "1"
+              },
+              {
+                "name": "ICP_PATH",
+                "value": "/app/icp"
+              },
+              {
+                "name": "MAX_BATCH",
+                "value": "8"
+              },
+              {
+                "name": "BATCH_TIMEOUT_MS",
+                "value": "10"
+              },
+              {
+                "name": "OMP_NUM_THREADS",
+                "value": "1"
+              },
+              {
+                "name": "OMP_THREAD_LIMIT",
+                "value": "1"
+              },
+              {
+                "name": "MKL_NUM_THREADS",
+                "value": "1"
+              },
+              {
+                "name": "GRPC_THREADS",
+                "value": "256"
+              }
+            ],
+            "image": "icp-ocr:dev",
+            "imagePullPolicy": "Never",
+            "livenessProbe": {
+              "failureThreshold": 6,
+              "grpc": {
+                "port": 50051,
+                "service": ""
+              },
+              "periodSeconds": 20,
+              "successThreshold": 1,
+              "timeoutSeconds": 5
+            },
+            "name": "ocr",
+            "ports": [
+              {
+                "containerPort": 50051,
+                "name": "grpc",
+                "protocol": "TCP"
+              },
+              {
+                "containerPort": 8000,
+                "name": "metrics",
+                "protocol": "TCP"
+              }
+            ],
+            "readinessProbe": {
+              "failureThreshold": 3,
+              "grpc": {
+                "port": 50051,
+                "service": ""
+              },
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "timeoutSeconds": 1
+            },
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "4Gi"
+              },
+              "requests": {
+                "cpu": "1",
+                "memory": "4Gi"
+              }
+            },
+            "startupProbe": {
+              "failureThreshold": 60,
+              "grpc": {
+                "port": 50051,
+                "service": ""
+              },
+              "periodSeconds": 5,
+              "successThreshold": 1,
+              "timeoutSeconds": 1
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/models",
+                "name": "models"
+              }
+            ]
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "terminationGracePeriodSeconds": 30,
+        "volumes": [
+          {
+            "emptyDir": {},
+            "name": "models"
+          }
+        ]
+      }
+    }
+  },
+  "status": {
+    "availableReplicas": 1,
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-11-17T17:39:49Z",
+        "lastUpdateTime": "2026-11-17T17:39:49Z",
+        "message": "Deployment has minimum availability.",
+        "reason": "MinimumReplicasAvailable",
+        "status": "True",
+        "type": "Available"
+      },
+      {
+        "lastTransitionTime": "2026-11-17T15:57:50Z",
+        "lastUpdateTime": "2026-11-17T18:02:46Z",
+        "message": "ReplicaSet \"icp-ocr-96dc96bc8\" has successfully progressed.",
+        "reason": "NewReplicaSetAvailable",
+        "status": "True",
+        "type": "Progressing"
+      }
+    ],
+    "observedGeneration": 79,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0,
+    "updatedReplicas": 1
+  }
+}

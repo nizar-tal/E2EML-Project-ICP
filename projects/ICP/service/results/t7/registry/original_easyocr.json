@@ -1,0 +1,47 @@
+{
+  "name": "original_easyocr",
+  "version": "1",
+  "source": "Milestone 1 settings; current pinned runtime",
+  "engine": "easyocr",
+  "settings": {
+    "name": "original_easyocr",
+    "group": "original",
+    "version": "1",
+    "engine": "easyocr",
+    "scale": 1.0,
+    "enhancement": [],
+    "channels": "original",
+    "source": "Milestone 1 settings; current pinned runtime",
+    "languages": [
+      "ch_sim",
+      "en"
+    ],
+    "detect_network": "craft",
+    "recog_network": "standard",
+    "quantize": true,
+    "readtext": {},
+    "artifacts": [
+      "craft_mlt_25k.pth",
+      "zh_sim_g2.pth"
+    ]
+  },
+  "artifacts": [
+    {
+      "file": "craft_mlt_25k.pth",
+      "bytes": 83152330,
+      "key": "artifacts/easyocr-1.7.2/craft_mlt_25k.pth"
+    },
+    {
+      "file": "zh_sim_g2.pth",
+      "bytes": 21951421,
+      "key": "artifacts/easyocr-1.7.2/zh_sim_g2.pth"
+    }
+  ],
+  "artifact_sources": {},
+  "size_bytes": 105103751,
+  "size_definition": "Sum of unique referenced model-file bytes; excludes metadata, runtime, and cache",
+  "offline_test_accuracy": {
+    "status": "unmeasured",
+    "metrics": null
+  }
+}

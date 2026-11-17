@@ -1,0 +1,6 @@
+Downloaded artifacts and checked file sizes in /work/base/tesseract_default; run the clean-directory OCR check next
+Downloaded artifacts and checked file sizes in /work/base/easyocr_original; run the clean-directory OCR check next
+Uploaded variants/blue_tesseract_psm6/1.json; model bytes: 2469156
+Uploaded variants/blue_easyocr/1.json; model bytes: 105103751
+Uploaded variants/original_easyocr/1.json; model bytes: 105103751
+Registry ready: five recipes, including the original-image EasyOCR ablation control.

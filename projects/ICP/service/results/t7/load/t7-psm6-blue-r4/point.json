@@ -1,0 +1,29 @@
+{
+  "tag": "t7-psm6-blue-r4",
+  "variant": "blue_tesseract_psm6",
+  "replicas": 4,
+  "batch": 1,
+  "cores_per_replica": 1,
+  "cost": 4,
+  "rate": 6.0,
+  "duration_s": 90.0,
+  "warmup_s": 15.0,
+  "seed": 8001,
+  "start": 0,
+  "wall_s": 168.40298867225647,
+  "core_seconds": 673.6119546890259,
+  "slo_ms": 1079.253,
+  "restarts_before": {
+    "icp-ocr-f48bcd69f-b6dv8": 0,
+    "icp-ocr-f48bcd69f-ft9m2": 0,
+    "icp-ocr-f48bcd69f-sq8hm": 0,
+    "icp-ocr-f48bcd69f-v2tq4": 0
+  },
+  "restarts_after": {
+    "icp-ocr-f48bcd69f-b6dv8": 0,
+    "icp-ocr-f48bcd69f-ft9m2": 0,
+    "icp-ocr-f48bcd69f-sq8hm": 0,
+    "icp-ocr-f48bcd69f-v2tq4": 0
+  },
+  "valid": true
+}

@@ -1,0 +1,2 @@
+﻿configuration,engine,cards,card_correct,correct_fields,nonempty_fields,empty_reference_fields,field_exact_match,card_exact_match,mean_field_cer,A1_pass_rate,A2_pass_rate,A3_pass_rate,A4_pass_rate,all_pass_rate,m1_text_recall,m1_location_recall,m1_exact_field_recall,m1_mean_confidence
+blue_tesseract_psm6,tesseract,2000,0,7411,16000,0,0.463187,0.0,0.427863,0.7075,0.235,0.3245,0.696,0.1945,0.688688,0.871,0.432937,0.577127

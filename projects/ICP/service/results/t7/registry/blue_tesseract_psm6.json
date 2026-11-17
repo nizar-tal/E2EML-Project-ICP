@@ -1,0 +1,43 @@
+{
+  "name": "blue_tesseract_psm6",
+  "version": "1",
+  "source": "tesseract-ocr/tessdata_fast, release 4.1.0, chi_sim.traineddata",
+  "engine": "tesseract",
+  "settings": {
+    "name": "blue_tesseract_psm6",
+    "version": "1",
+    "source": "tesseract-ocr/tessdata_fast, release 4.1.0, chi_sim.traineddata",
+    "engine": "tesseract",
+    "language": "chi_sim",
+    "config": "--psm 6",
+    "scale": 1.0,
+    "enhancement": [],
+    "channels": [
+      "blue"
+    ],
+    "quantize": false,
+    "artifacts": [
+      "chi_sim.traineddata"
+    ]
+  },
+  "artifacts": [
+    {
+      "file": "chi_sim.traineddata",
+      "bytes": 2469156,
+      "key": "artifacts/tessdata_fast-4.1.0/chi_sim.traineddata"
+    }
+  ],
+  "artifact_sources": {
+    "chi_sim.traineddata": {
+      "repository": "tesseract-ocr/tessdata_fast",
+      "revision": "4.1.0",
+      "bytes": 2469156
+    }
+  },
+  "size_bytes": 2469156,
+  "size_definition": "Sum of unique referenced model-file bytes; excludes metadata, runtime, and cache",
+  "offline_test_accuracy": {
+    "status": "unmeasured",
+    "metrics": null
+  }
+}

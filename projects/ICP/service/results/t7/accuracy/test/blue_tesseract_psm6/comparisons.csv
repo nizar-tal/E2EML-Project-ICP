@@ -1,0 +1,11 @@
+﻿group,assertion,accuracy,pearson,spearman,reason,same_ranking
+all,A1,field_exact_match,,,Fewer than two configurations or missing accuracy denominator,
+all,A1,card_exact_match,,,Fewer than two configurations or missing accuracy denominator,
+all,A2,field_exact_match,,,Fewer than two configurations or missing accuracy denominator,
+all,A2,card_exact_match,,,Fewer than two configurations or missing accuracy denominator,
+all,A3,field_exact_match,,,Fewer than two configurations or missing accuracy denominator,
+all,A3,card_exact_match,,,Fewer than two configurations or missing accuracy denominator,
+all,A4,field_exact_match,,,Fewer than two configurations or missing accuracy denominator,
+all,A4,card_exact_match,,,Fewer than two configurations or missing accuracy denominator,
+all,all,field_exact_match,,,Fewer than two configurations or missing accuracy denominator,
+all,all,card_exact_match,,,Fewer than two configurations or missing accuracy denominator,
