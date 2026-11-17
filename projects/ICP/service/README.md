@@ -455,7 +455,79 @@ Example numbers from a 200-card run (tesseract_default, 2 pods):
 
 ---
 
-## 14. Known limits
+## 14. T5 — load generator and SLA
+
+T5 adds an open-loop load generator (`loadgen.py`) and SLA calibration (`profile/calibrate_sla.py`).
+
+SLA values we use (from `runs/sla.json` after calibration):
+
+| name | value | meaning |
+|------|-------|---------|
+| L0 | 539.6 ms | unloaded p95 latency |
+| SLO | 1079.3 ms | 2×L0 — latency budget under load |
+| T0 | 1.5 cards/s | base sustainable rate |
+| target | 6 cards/s | 4×T0 — capacity target |
+
+Loadgen checks:
+
+```bash
+# from the service folder on the VM host, after OCR is Ready
+python3 loadgen.py --host dns:///icp-ocr.icp.svc.cluster.local:50051 \
+  --rate 1 --duration 30 --warmup 5 --out /tmp/lg-smoke --tag smoke
+```
+
+Or use the Job helper:
+
+```bash
+python3 profile/run_point.py --variant tesseract_default --replicas 1 --batch 1 \
+  --rate 1.5 --duration 60 --tag sla-check --slo-ms 1079.3
+```
+
+Calibrate SLA (writes `~/icp/runs/sla.json`):
+
+```bash
+python3 profile/calibrate_sla.py
+```
+
+---
+
+## 15. T6 — profiling sweep and report
+
+T6 sweeps (variant × replicas × batch), finds the offered rate within the SLA, then builds tables and figures.
+
+Run the full flow on the VM (SLA + reduced sweep + report):
+
+```bash
+cd ~/icp/T3/service
+bash profile/run_profile.sh
+```
+
+Sweep only (resume / extra grid):
+
+```bash
+python3 profile/sweep_t6.py --reduced
+python3 profile/sweep_t6.py --extra --resume
+```
+
+Rebuild the report from existing run data (laptop or VM; no new load):
+
+```bash
+# copy runs/ from the VM first if needed, then:
+bash profile/run_profile.sh --report-only
+```
+
+Outputs:
+
+| path | contents |
+|------|----------|
+| `runs/sla.json` | L0 / SLO / T0 |
+| `runs/t6/index.json` | selected points + all probe runs |
+| `runs/t6/<tag>/` | per-point summary + job.yaml |
+| `runs/report/` | `t5_sla.md`, `t6_table.md`, `t6_breakdown.md`, figures |
+
+---
+
+## 16. Known limits
 
 - Low A2/A3 — OCR often misses small month/day digits.  
 - OCR image ~2.45GB.  
@@ -463,7 +535,7 @@ Example numbers from a 200-card run (tesseract_default, 2 pods):
 
 ---
 
-## 15. If something breaks
+## 17. If something breaks
 
 **T3 / Docker**
 

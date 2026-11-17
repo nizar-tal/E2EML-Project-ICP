@@ -63,6 +63,11 @@ def main():
     if args.slo_ms is not None:
         slo_args = f'\n            - --slo-ms\n            - "{args.slo_ms}"'
     host_out = str(runs.resolve())
+    # Shared HF/datasets cache across runs (EasyOCR download once).
+    hf_host = Path(os.path.expanduser("~/icp/cache/hf"))
+    hf_host.mkdir(parents=True, exist_ok=True)
+    os.chmod(hf_host, 0o777)
+    hf_path = str(hf_host.resolve())
     man = runs / "job.yaml"
     man.write_text(f"""apiVersion: batch/v1
 kind: Job
@@ -71,6 +76,7 @@ metadata:
   namespace: icp
 spec:
   backoffLimit: 0
+  ttlSecondsAfterFinished: 120
   template:
     spec:
       restartPolicy: Never
@@ -100,9 +106,20 @@ spec:
             - {args.tag}
             - --splits
             - /app/icp/splits.json{slo_args}
+          env:
+            - name: HF_HOME
+              value: /hf
+            - name: HF_DATASETS_CACHE
+              value: /hf
+            - name: TRANSFORMERS_CACHE
+              value: /hf
+            - name: TMPDIR
+              value: /out/.tmp
           volumeMounts:
             - name: out
               mountPath: /out
+            - name: hf
+              mountPath: /hf
           resources:
             requests: {{cpu: "1", memory: 4Gi}}
             limits: {{cpu: "2", memory: 6Gi}}
@@ -111,32 +128,52 @@ spec:
           hostPath:
             path: {host_out}
             type: DirectoryOrCreate
+        - name: hf
+          hostPath:
+            path: {hf_path}
+            type: DirectoryOrCreate
 """)
     t0 = time.time()
-    sh(f"kubectl apply -f {man}")
-    deadline = time.time() + 3600
     summary = runs / f"{args.tag}.summary.json"
-    while time.time() < deadline:
-        exists = subprocess.run(
-            f"kubectl -n icp get job {job}", shell=True,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if exists.returncode != 0:
-            print("job disappeared", flush=True)
+    attempts = 0
+    while True:
+        attempts += 1
+        sh(f"kubectl -n icp delete job {job} --ignore-not-found")
+        for old in runs.glob(f"{args.tag}.*"):
+            old.unlink()
+        sh(f"kubectl apply -f {man}")
+        deadline = time.time() + 3600
+        while time.time() < deadline:
+            exists = subprocess.run(
+                f"kubectl -n icp get job {job}", shell=True,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if exists.returncode != 0:
+                print("job disappeared", flush=True)
+                sys.exit(1)
+            succ = out(f"kubectl -n icp get job {job} -o jsonpath='{{.status.succeeded}}'") or "0"
+            fail = out(f"kubectl -n icp get job {job} -o jsonpath='{{.status.failed}}'") or "0"
+            if summary.exists() and (succ not in ("", "0") or fail not in ("", "0")):
+                break
+            if fail not in ("", "0") and not summary.exists():
+                sh(f"kubectl -n icp logs job/{job}", check=False)
+                break
+            time.sleep(3)
+        else:
+            print("timeout waiting for job", flush=True)
             sys.exit(1)
-        succ = out(f"kubectl -n icp get job {job} -o jsonpath='{{.status.succeeded}}'") or "0"
-        fail = out(f"kubectl -n icp get job {job} -o jsonpath='{{.status.failed}}'") or "0"
-        if summary.exists() and (succ not in ("", "0") or fail not in ("", "0")):
+        if summary.exists():
             break
-        if fail not in ("", "0") and not summary.exists():
-            sh(f"kubectl -n icp logs job/{job}", check=False)
+        if attempts >= 2:
+            print("job failed twice without summary", flush=True)
             sys.exit(1)
-        time.sleep(3)
-    else:
-        print("timeout waiting for job", flush=True)
-        sys.exit(1)
+        print("retrying loadgen job once", flush=True)
     wall = time.time() - t0
     pod = out(f"kubectl -n icp get pods -l job-name={job} -o jsonpath='{{.items[0].metadata.name}}'")
-    sh(f"kubectl -n icp logs {pod}", check=False)
+    for i in range(3):
+        r = subprocess.run(f"kubectl -n icp logs {pod}", shell=True)
+        if r.returncode == 0:
+            break
+        time.sleep(5)
     if not summary.exists():
         print("missing summary on hostPath", flush=True)
         sys.exit(1)

@@ -38,13 +38,26 @@ def run_point(variant, replicas, batch, rate, duration, warmup, seed, start, slo
     )
     if slo_ms is not None:
         cmd += f" --slo-ms {slo_ms}"
-    sh(cmd)
+    rc = sh(cmd, check=False).returncode
+    if rc != 0:
+        print(f"run_point failed rc={rc} tag={tag}; treating rate as invalid", flush=True)
+        return tag, {"valid": False, "core_seconds": None}, {
+            "p50_ms": None, "p95_ms": 1e18, "p99_ms": None, "completed_rate": 0,
+            "mean_queue_ms": None, "mean_inference_ms": None, "mean_network_ms": None,
+            "errors": 1, "assertion_pass": {}, "field_exact": {},
+        }
     point = load_point(tag)
     if not point.get("valid", True):
         print(f"invalid point (restart); retry once: {tag}", flush=True)
         tag2 = (tag + "-retry")[:60]
         cmd2 = cmd.replace(f"--tag {tag}", f"--tag {tag2}")
-        sh(cmd2)
+        rc2 = sh(cmd2, check=False).returncode
+        if rc2 != 0:
+            return tag2, {"valid": False, "core_seconds": None}, {
+                "p50_ms": None, "p95_ms": 1e18, "p99_ms": None, "completed_rate": 0,
+                "mean_queue_ms": None, "mean_inference_ms": None, "mean_network_ms": None,
+                "errors": 1, "assertion_pass": {}, "field_exact": {},
+            }
         point = load_point(tag2)
         tag = tag2
     summary = load_summary(tag)
@@ -83,9 +96,13 @@ def search_max(variant, replicas, batch, t0, slo_ms, seed, sc, results):
         variant, replicas, batch, low_rate, 60, 15, seed, start, slo_ms, tag0)
     entry = pack(variant, replicas, batch, "low", low_rate, tag, point, summary, slo_ms, seed, start)
     results.append(entry)
+    # failed run_point (no real summary) must not be recorded as thr=0
+    if entry.get("mean_inference_ms") is None and entry.get("p95_ms") in (None, 1e18):
+        raise RuntimeError(f"point failed without real summary: {tag}")
     if not entry["slo_ok"]:
         entry["selected"] = True
         entry["max_throughput_slo"] = 0.0
+        entry["completed_throughput"] = entry.get("throughput")
         return entry
 
     rate = max(t0 * replicas, low_rate)
@@ -116,15 +133,24 @@ def search_max(variant, replicas, batch, t0, slo_ms, seed, sc, results):
     for r in results:
         if r["tag"] == best["tag"]:
             r["selected"] = True
-            r["max_throughput_slo"] = r["throughput"] if r.get("slo_ok") else 0.0
+            # offered rate meeting SLO (not completed throughput)
+            r["max_throughput_slo"] = r["rate"] if r.get("slo_ok") else 0.0
+            r["completed_throughput"] = r.get("throughput")
             return r
     best["selected"] = True
-    best["max_throughput_slo"] = best["throughput"] if best.get("slo_ok") else 0.0
+    best["max_throughput_slo"] = best["rate"] if best.get("slo_ok") else 0.0
+    best["completed_throughput"] = best.get("throughput")
     return best
 
 
-def grid(reduced):
+def grid(reduced, extra=False):
     pts = []
+    if extra:
+        for v in VARIANTS:
+            for r in (2, 8):
+                for b in (4, 8):
+                    pts.append((v, r, b))
+        return pts
     for v in VARIANTS:
         for r in (1, 2, 4, 8):
             pts.append((v, r, 1))
@@ -144,6 +170,8 @@ def grid(reduced):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--reduced", action="store_true")
+    ap.add_argument("--extra", action="store_true",
+                    help="T6-1b: batch {4,8} x replicas {2,8}")
     ap.add_argument("--resume", action="store_true")
     ap.add_argument("--seed", type=int, default=8001)
     args = ap.parse_args()
@@ -169,8 +197,8 @@ def main():
         results = list(prev.get("all_runs") or [])
         print(f"resume: kept selected={len(selected)} runs={len(results)}", flush=True)
     done = {(s["variant"], s["replicas"], s["batch"]) for s in selected}
-    pts = grid(args.reduced)
-    print(f"points={len(pts)} reduced={args.reduced} slo={slo} t0={t0}", flush=True)
+    pts = grid(args.reduced, extra=args.extra)
+    print(f"points={len(pts)} reduced={args.reduced} extra={args.extra} slo={slo} t0={t0}", flush=True)
 
     for i, (variant, replicas, batch) in enumerate(pts):
         if (variant, replicas, batch) in done:
