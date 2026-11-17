@@ -1,0 +1,5 @@
+Variant,mean_queue_ms,mean_inference_ms,mean_network_ms,p95_ms
+tesseract_default,37.7,362.3,2.7,576.0
+tesseract_psm6,45.3,361.6,3.3,577.1
+easyocr_original,938.6,2808.6,3.2,6374.1
+easyocr_half,103.4,776.8,3.1,1309.4

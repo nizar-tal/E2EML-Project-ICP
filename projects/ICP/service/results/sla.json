@@ -1,0 +1,75 @@
+{
+  "L0_ms": 539.6264441995299,
+  "SLO_ms": 1079.2528883990599,
+  "T0_rps": 1.5,
+  "target_rps": 6.0,
+  "multiplier": 4.0,
+  "seed": 8001,
+  "variant": "tesseract_default",
+  "vm_cores": 48,
+  "replicas_at_target_est": 4.0,
+  "run_tags": [
+    "sla-L0",
+    "sla-T0-0p5",
+    "sla-T0-1p0",
+    "sla-T0-1p5",
+    "sla-T0-2p0",
+    "sla-T0-2p5",
+    "sla-T0-1p75"
+  ],
+  "table": [
+    {
+      "rate": 0.5,
+      "p95_ms": 652.7704035006536,
+      "ok": true,
+      "tag": "sla-T0-0p5",
+      "mean_queue_ms": 35.918674269143274,
+      "seed": 8001,
+      "start": 40
+    },
+    {
+      "rate": 1.0,
+      "p95_ms": 642.1766460007348,
+      "ok": true,
+      "tag": "sla-T0-1p0",
+      "mean_queue_ms": 42.092282363536334,
+      "seed": 8001,
+      "start": 100
+    },
+    {
+      "rate": 1.5,
+      "p95_ms": 1051.3021592496443,
+      "ok": true,
+      "tag": "sla-T0-1p5",
+      "mean_queue_ms": 140.40495104585068,
+      "seed": 8001,
+      "start": 221
+    },
+    {
+      "rate": 2.0,
+      "p95_ms": 2197.291912999572,
+      "ok": false,
+      "tag": "sla-T0-2p0",
+      "mean_queue_ms": 583.680065088339,
+      "seed": 8001,
+      "start": 412
+    },
+    {
+      "rate": 2.5,
+      "p95_ms": 11630.220187149642,
+      "ok": false,
+      "tag": "sla-T0-2p5",
+      "mean_queue_ms": 4265.4680022484745,
+      "seed": 8001,
+      "start": 690
+    },
+    {
+      "rate": 1.75,
+      "p95_ms": 2294.136705900928,
+      "ok": false,
+      "tag": "sla-T0-1p75",
+      "mean_queue_ms": 386.2431209428021,
+      "seed": 8001
+    }
+  ]
+}

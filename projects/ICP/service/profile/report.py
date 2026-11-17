@@ -239,7 +239,8 @@ def fig_acc_vs_maxtput(data, out: Path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--runs", default=str(Path(__file__).resolve().parents[3] / "runs"))
+    # Default: committed results/ next to this service folder.
+    ap.add_argument("--runs", default=str(Path(__file__).resolve().parents[1] / "results"))
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
     runs = Path(args.runs)

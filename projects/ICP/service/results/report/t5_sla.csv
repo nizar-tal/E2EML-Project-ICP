@@ -1,0 +1,8 @@
+rate,p95,within_SLA
+0.2,539.6,True
+0.5,652.8,True
+1.0,642.2,True
+1.5,1051.3,True
+1.75,2294.1,False
+2.0,2197.3,False
+2.5,11630.2,False

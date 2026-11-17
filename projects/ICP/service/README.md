@@ -61,6 +61,8 @@ ssh icp-vm "kubectl -n icp get secret grafana-admin -o jsonpath='{.data.password
 
 Expected: http://localhost:3000 login works; dashboard **ICP OCR — stage: icp-ocr** is listed.
 
+Screenshot of that dashboard: [docs/grafana.png](docs/grafana.png).
+
 ### 7) Switch the model (no rebuild)
 
 ```bash
@@ -430,6 +432,8 @@ ssh icp-vm "kubectl -n icp get secret grafana-admin -o jsonpath='{.data.password
 
 Expected: dashboard **ICP OCR — stage: icp-ocr** at http://localhost:3000.
 
+Screenshot: [docs/grafana.png](docs/grafana.png).
+
 ---
 
 ## 12. What each dashboard panel means
@@ -524,6 +528,99 @@ Outputs:
 | `runs/t6/index.json` | selected points + all probe runs |
 | `runs/t6/<tag>/` | per-point summary + job.yaml |
 | `runs/report/` | `t5_sla.md`, `t6_table.md`, `t6_breakdown.md`, figures |
+
+---
+
+## Results (T5, T6)
+
+Committed copies live under `service/results/` (no raw run folders).
+
+SLA values:
+
+| name | value | meaning |
+|------|-------|---------|
+| L0 | 539.6 ms | unloaded p95 latency |
+| SLO | 1079.3 ms | p95 per card under load (2×L0) |
+| T0 | 1.5 cards/s | base sustainable rate |
+| target | 6 cards/s | 4×T0 |
+
+Where to look:
+
+| path | contents |
+|------|----------|
+| `results/sla.json` | SLA numbers |
+| `results/t6/index.json` | all selected T6 points |
+| `results/report/t6_table.csv` | main table (48 rows) |
+| `results/report/t6_breakdown.*` | per-variant breakdown |
+| `results/report/t5_sla.*` | SLA calibration table + plot |
+| `results/report/t6_acc_vs_p95.png` | accuracy vs p95 |
+| `results/report/t6_acc_vs_maxtput.png` | accuracy vs max throughput |
+| `docs/grafana.png` | Grafana dashboard screenshot |
+
+Regenerate tables and plots from the repo alone (uses `results/` when `work/runs` is missing):
+
+```bash
+cd projects/ICP/service
+bash profile/run_profile.sh --report-only
+```
+
+Optional: write into a temp folder instead of overwriting `results/report/`:
+
+```bash
+REPORT_OUT=/tmp/icp-report bash profile/run_profile.sh --report-only
+```
+
+---
+
+## Run one setup live (for T7)
+
+The cluster stays up until **2026-11-19 01:00 UTC**. On the VM host:
+
+```bash
+cd ~/icp/T3/service
+./k8s/scale.sh 4
+python3 profile/run_point.py \
+  --variant tesseract_psm6 \
+  --replicas 4 \
+  --batch 1 \
+  --rate 6 \
+  --duration 90 \
+  --warmup 15 \
+  --seed 8001 \
+  --slo-ms 1079.3 \
+  --tag t7-psm6-r4-b1-r6
+```
+
+Summary file (hostPath):
+
+```text
+~/icp/runs/t7-psm6-r4-b1-r6/t7-psm6-r4-b1-r6.summary.json
+```
+
+Also written: `point.json` and `job.yaml` in that folder.
+
+How to read p95 vs the SLO:
+
+```bash
+python3 - <<'PY'
+import json
+from pathlib import Path
+s = json.loads(Path.home().joinpath(
+    "icp/runs/t7-psm6-r4-b1-r6/t7-psm6-r4-b1-r6.summary.json").read_text())
+slo = 1079.3
+print(f"p95_ms={s['p95_ms']:.1f}  SLO={slo}  within_SLA={s['p95_ms'] <= slo}")
+print(f"throughput={s.get('completed_rate')}  errors={s.get('errors')}")
+PY
+```
+
+If `p95_ms` ≤ 1079.3 ms, the setup meets the SLA at that offered rate.
+
+**Preprocessing:** enhancement and channel come from the variant’s settings in the MinIO registry, not from an env var. To try a new preprocessing + OCR combination live:
+
+1. Build a model dir and upload a new variant with `registry.py upload --name <new_name> ...`
+2. `kubectl -n icp set env deploy/icp-ocr VARIANT=<new_name>`
+3. `kubectl -n icp rollout status deploy/icp-ocr`
+4. Re-run `run_point.py` with `--variant <new_name>`.
 
 ---
 
