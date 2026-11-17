@@ -557,6 +557,19 @@ Where to look:
 | `results/report/t6_acc_vs_maxtput.png` | accuracy vs max throughput |
 | `docs/grafana.png` | Grafana dashboard screenshot |
 
+Each variant’s test accuracy was written to the registry with `registry.py record-accuracy` (field exact match on the 2,000-card test slice): **tesseract_default 0.362**, **tesseract_psm6 0.411**, **easyocr_original 0.347**, **easyocr_half 0.190**. Commands used (from the ICP folder, after provisioning model dirs and with MinIO env set):
+
+```bash
+python registry.py record-accuracy --name tesseract_default --version 1 \
+  --summary metadata/tesseract_default.summary.json --model-dir /tmp/models/tess
+python registry.py record-accuracy --name tesseract_psm6 --version 1 \
+  --summary metadata/tesseract_psm6.summary.json --model-dir /tmp/models/tess
+python registry.py record-accuracy --name easyocr_original --version 1 \
+  --summary metadata/easyocr_original.summary.json --model-dir /tmp/models/easy
+python registry.py record-accuracy --name easyocr_half --version 1 \
+  --summary metadata/easyocr_half.summary.json --model-dir /tmp/models/easy
+```
+
 Regenerate tables and plots from the repo alone (uses `results/` when `work/runs` is missing):
 
 ```bash
@@ -626,6 +639,7 @@ If `p95_ms` ≤ 1079.3 ms, the setup meets the SLA at that offered rate.
 
 ## 16. Known limits
 
+- The live assertion check finds only **ID, gender, and birth date** by format, because A1–A4 use only these fields and there are no labels at serving time. **Name, ethnicity, and address** are scored offline on the test slice (all 8 fields).  
 - Low A2/A3 — OCR often misses small month/day digits.  
 - OCR image ~2.45GB.  
 - EasyOCR is slow on CPU.
