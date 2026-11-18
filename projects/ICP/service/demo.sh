@@ -64,6 +64,10 @@ start_tunnel() {
     echo "VM not reachable" >&2
     exit 1
   fi
+  # Drop stale grafana forwards (VM :3000) and any local listener on 3000.
+  remote 'pkill -f "port-forward.*grafana" 2>/dev/null || true; fuser -k 3000/tcp 2>/dev/null || true' || true
+  fuser -k 3000/tcp 2>/dev/null || true
+  sleep 1
   ssh -L 3000:localhost:3000 "${VM}" 'kubectl -n icp port-forward svc/grafana 3000:3000' \
     >/tmp/icp-demo-grafana-tunnel.log 2>&1 &
   TUNNEL_PID=$!
