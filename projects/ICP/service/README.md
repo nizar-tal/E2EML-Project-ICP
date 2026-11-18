@@ -4,6 +4,16 @@ Originally create by Ishan and sent to Nizar so that the latter can pick up the 
 
 T7 experiments, report generation, and exact VM commands: [t7/README.md](t7/README.md).
 
+## How to reproduce M2
+
+1. Build image (from `projects/ICP` on the VM):
+   `docker build -f service/Dockerfile -t icp-ocr:dev .`
+2. Deploy: `bash service/k8s/setup_vm.sh`
+3. Regenerate tables and plots: `bash service/run_all.sh`
+   - T5/T6 → `service/results/report/` (`t5_sla.{csv,tex,png}`, `t6_table.*`, `t6_breakdown.{csv,tex}`, `t6_acc_vs_p95.png`, `t6_acc_vs_maxtput.png`)
+   - T7 → `$T7_WORK/report/` (default `~/icp/t7/report`: `t7_pareto.{png,pdf}`, `t7_configurations.{csv,md}`); committed copies under `service/results/t7/report/`
+4. Demo: `bash service/demo.sh`
+
 ## Reproduce our work (for the team)
 
 We assume you already have a VM with SSH. Copy the ICP folder (this tree) to the VM, then:
@@ -101,14 +111,14 @@ In the repo, `service/` sits **inside** `projects/ICP/`, next to Nizar's files.
 
 ```
 T3/
-  SOURCE.txt                 Nizar copies — where they came from (do not edit / do not push)
-  image.py … registry.py …   Nizar ICP code (see SOURCE.txt)
+  image.py … registry.py …   Nizar ICP code
   ocr_variants.json          Nizar — the 4 variants
   Dockerfile.registry        Nizar — MinIO image
   compose.registry.yaml      Nizar — local MinIO
   service/                   ours (this is what we push)
     README.md                this file
-    DEMO.md                  10-minute screen walkthrough
+    demo.sh                  10-minute screen walkthrough
+    run_all.sh               regenerate all M2 tables and plots
     ocr.proto                gRPC API
     ocr_pb2.py               protobuf stubs from ocr.proto
     ocr_pb2_grpc.py          gRPC stubs from ocr.proto
@@ -531,7 +541,7 @@ Outputs:
 | `runs/sla.json` | L0 / SLO / T0 |
 | `runs/t6/index.json` | selected points + all probe runs |
 | `runs/t6/<tag>/` | per-point summary + job.yaml |
-| `runs/report/` | `t5_sla.md`, `t6_table.md`, `t6_breakdown.md`, figures |
+| `runs/report/` | `t5_sla.{csv,tex,png}`, `t6_table.{csv,md,tex}`, `t6_breakdown.{csv,tex}`, figures |
 
 ---
 

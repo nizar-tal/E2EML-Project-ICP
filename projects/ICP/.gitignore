@@ -2,7 +2,7 @@ __pycache__/
 .env
 .venv/
 models*/
-results/
+/results/
 .cache/
 *.pth
 *.pt
@@ -12,4 +12,10 @@ results/
 Milestone 2 v3.pdf
 Pipeline Evaluation Guide v4.pdf
 README.md
-service/results/
+service/results/*
+!service/results/report/
+!service/results/report/**
+!service/results/t7/
+service/results/t7/*
+!service/results/t7/report/
+!service/results/t7/report/**
