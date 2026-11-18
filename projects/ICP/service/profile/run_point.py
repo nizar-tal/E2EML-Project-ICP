@@ -26,6 +26,7 @@ def main():
     p.add_argument("--slo-ms", type=float, default=None)
     p.add_argument("--tag", required=True)
     p.add_argument("--arrival", default="poisson")
+    p.add_argument("--image", default="icp-ocr:dev")
     p.add_argument("--scale-sh", default=os.path.expanduser("~/icp/T3/service/k8s/scale.sh"))
     p.add_argument("--runs-dir", default=os.path.expanduser("~/icp/runs"))
     args = p.parse_args()
@@ -82,7 +83,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: loadgen
-          image: icp-ocr:dev
+          image: {args.image}
           imagePullPolicy: Never
           command: ["python", "/app/loadgen.py"]
           args:

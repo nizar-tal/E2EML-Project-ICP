@@ -1,3 +1,6 @@
+# nizar talty
+# originally written on the 15th november 2026
+
 import re
 from datetime import date
 
@@ -13,8 +16,13 @@ def birth_parts(fields):
 
 def check_assertions(fields):
     identifier = normalize(fields.get("id_number"))
+
+    # used for a2 and a3 checks
     parts = birth_parts(fields)
+
+    # this is checking id format has 18 chars with 17 digits and the last char is a digit or X
     a1 = re.fullmatch(r"\d{17}[\dX]", identifier) is not None
+
     a2, a3 = False, False
     if parts is not None:
         year, month, day = parts

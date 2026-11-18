@@ -86,6 +86,7 @@ def extract(image_rgb: np.ndarray, settings: dict, model_dir: str) -> dict:
         "preprocess_ms": preprocess_ms,
         "ocr_ms": ocr_ms,
         "text": ocr_result["text"],
+        "detections": ocr_result["detections"],
     }
 
 

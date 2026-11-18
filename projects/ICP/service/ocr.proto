@@ -8,6 +8,7 @@ service OCR {
 message CardRequest {
   string card_id = 1;   // dataset index as string
   bytes  image   = 2;   // PNG-encoded card image
+  bool include_detections = 3; // evaluation only; labels stay in the client
 }
 
 message Assertions {
@@ -28,4 +29,5 @@ message CardResponse {
   Timing timing = 4;
   string variant = 5;              // variant name that served this request
   int32  batch_size = 6;           // size of the batch this request ran in
+  string detections_json = 7;      // optional raw OCR text/boxes for all-eight-field scoring
 }

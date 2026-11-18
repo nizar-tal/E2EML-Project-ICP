@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw
 # Nizar Talty
 
 # 10/4/2026
+# edited on 15/11/2026 by nizar talty
 # score OCR text against the ID-card ground-truth fields
 
 CLASS_NAMES = {
@@ -135,9 +136,8 @@ def visualize_boxes(image, annotations, detections):
         draw.rectangle((box[0] + original.width, box[1], box[2] + original.width, box[3]), outline="red", width=2)
     return canvas
 
-
-# Required metrics deliberately do not use historical _normalize/casefold or IoU gating.
 def normalize(text):
+    # required nkfc normlation and white space removal
     return "".join(unicodedata.normalize("NFKC", "" if text is None else str(text)).split()).replace("x", "X")
 
 
@@ -152,8 +152,11 @@ def enclosing_box(box):
 
 
 def assign_fields(detections, annotations):
+    # new way from M2 to assign fields that is slightely different from how we did it in M1
     groups = [[] for _ in annotations]
+    # fetch the boxes
     boxes = [enclosing_box(field["box"]) for field in annotations]
+
     for detection in detections:
         item = {**detection, "box": enclosing_box(detection["box"])}
         overlaps = []
@@ -161,10 +164,11 @@ def assign_fields(detections, annotations):
             scale = min(_area(item["box"]), _area(box))
             overlaps.append(_intersection(item["box"], box) / scale if scale else 0.0)
         if overlaps:
-            # First annotation wins equal-overlap ties; input order breaks equal-position ties.
+            # First annotation wins equal-overlap ties & input order breaks equal-position ties
             index = max(range(len(overlaps)), key=lambda i: overlaps[i])
             if overlaps[index] >= 0.5:
                 groups[index].append(item)
+
     return ["".join(item["text"] for item in sorted(group, key=lambda d: (d["box"][1], d["box"][0]))) for group in groups]
 
 
@@ -173,6 +177,7 @@ def edit_distance(first, second):
     for i, a in enumerate(first, 1):
         current = [i]
         for j, b in enumerate(second, 1):
+            # had an issue with the indices so chatgpt fixed it for me
             current.append(min(current[-1] + 1, previous[j] + 1, previous[j - 1] + (a != b)))
         previous = current
     return previous[-1]

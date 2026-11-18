@@ -182,6 +182,8 @@ class OCRService:
             ),
             variant=self.variant_name,
             batch_size=batch_size,
+            detections_json=json.dumps(result["detections"], ensure_ascii=False)
+            if request.include_detections else "",
         )
 
 

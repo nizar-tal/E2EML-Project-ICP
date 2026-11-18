@@ -1,0 +1,15 @@
+{
+  "deployments": [
+    {"id": "baseline-r8", "variant": "tesseract_default", "replicas": 8},
+    {"id": "easyocr-blue-r8", "variant": "blue_easyocr", "replicas": 8},
+    {"id": "psm6-r8", "variant": "tesseract_psm6", "replicas": 8},
+    {"id": "psm6-blue-r8", "variant": "blue_tesseract_psm6", "replicas": 8},
+    {"id": "psm6-blue-r4", "variant": "blue_tesseract_psm6", "replicas": 4},
+    {"id": "baseline-r4", "variant": "tesseract_default", "replicas": 4},
+    {"id": "psm6-r4", "variant": "tesseract_psm6", "replicas": 4}
+  ],
+  "ablations": [
+    {"engine": "Tesseract PSM 6", "original": "tesseract_psm6", "blue": "blue_tesseract_psm6"},
+    {"engine": "EasyOCR (historical settings)", "original": "original_easyocr", "blue": "blue_easyocr"}
+  ]
+}

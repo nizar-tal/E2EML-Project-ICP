@@ -1,5 +1,9 @@
 # OCR service — T3 + T4
 
+Originally create by Ishan and sent to Nizar so that the latter can pick up the work after T6 and finish T7.
+
+T7 experiments, report generation, and exact VM commands: [t7/README.md](t7/README.md).
+
 ## Reproduce our work (for the team)
 
 We assume you already have a VM with SSH. Copy the ICP folder (this tree) to the VM, then:

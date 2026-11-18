@@ -28,9 +28,11 @@ RUN pip install --no-cache-dir torch==2.7.1 torchvision==0.22.1 --index-url http
     && pip install --no-cache-dir -r /app/requirements-t3.txt
 
 COPY image.py ocr.py metrics.py assertions.py registry.py evaluate.py \
-     model_artifacts.py prepare_splits.py ocr_variants.json splits.json /app/icp/
+     model_artifacts.py prepare_splits.py ocr_variants.json pipeline_configs.json splits.json /app/icp/
 COPY service/ocr_pb2.py service/ocr_pb2_grpc.py service/pipeline.py \
      service/server.py service/client.py service/loadgen.py /app/
+COPY service/t7 /app/t7/
+COPY service/profile/report.py /app/t6_report.py
 
 RUN mkdir -p /models && chown -R appuser:appuser /app /home/appuser /models
 USER appuser
