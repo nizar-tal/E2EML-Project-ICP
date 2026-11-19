@@ -1,5 +1,4 @@
 # E2EML Project – ID Card OCR (ICP)
-Team 6: Nizar Talty, Ishan Pathak — CS/ECE 8001
 
 ## Milestone 2
 
