@@ -1,88 +1,153 @@
-Project Description
+# E2EML Project – ID Card OCR (ICP)
+Team 6: Nizar Talty, Ishan Pathak — CS/ECE 8001
 
-# Overview
+## Milestone 2
 
-In this project you will implement, evaluate, operate, monitor, and optimize an end-to-end ML pipeline. The details of four kinds of pipelines: datasets, model choices, metrics are provided to you. The specific pipeline that you wish to implement is your choice. 
+OCR pipeline deployed as a gRPC service on k3s, profiled for accuracy, latency, throughput and cost.
 
-The focus of the project is to implement the pipeline choices, evaluate which configuration of the pipeline is best and under what data distributions, operationalize the pipelines on the cloud, monitor their real-time behavior, and optimize the choice of a pipeline configuration. 
+**Result:** blue-channel Tesseract PSM 6, 4 replicas × 1 core, 46.32% field exact match, p95 490 ms at 6 cards/s (SLA: p95 ≤ 1079 ms at 6 cards/s).
 
-The project entails many concerns, including deployment, scaling, reliability, drift and feedback loops. It also has three milestones including a final project presentation. 
+### Deliverables (this repo)
 
-# Overall mechanics and infrastructure
+| Item | Path |
+|------|------|
+| Report (M2) | [`Slides and Report/CS8001_06_Milestone_2_Report.pdf`](Slides%20and%20Report/CS8001_06_Milestone_2_Report.pdf) |
+| Slides (M2) | [`Slides and Report/CS8001_06_Milestone_2_Slides.pptx`](Slides%20and%20Report/CS8001_06_Milestone_2_Slides.pptx) |
+| Dockerfile | [`projects/ICP/service/Dockerfile`](projects/ICP/service/Dockerfile) |
+| k8s manifests | [`projects/ICP/service/k8s/`](projects/ICP/service/k8s/) |
+| Prometheus config | [`projects/ICP/service/k8s/prometheus.yml`](projects/ICP/service/k8s/prometheus.yml) |
+| Grafana dashboard JSON | [`projects/ICP/service/k8s/dashboard.json`](projects/ICP/service/k8s/dashboard.json) |
+| Load generator | [`projects/ICP/service/loadgen.py`](projects/ICP/service/loadgen.py) |
+| Scaling script | [`projects/ICP/service/k8s/scale.sh`](projects/ICP/service/k8s/scale.sh) |
+| Single entry point | [`projects/ICP/service/run_all.sh`](projects/ICP/service/run_all.sh) |
+| Plot: acc vs p95 | [`projects/ICP/service/results/report/t6_acc_vs_p95.png`](projects/ICP/service/results/report/t6_acc_vs_p95.png) |
+| Plot: acc vs max throughput | [`projects/ICP/service/results/report/t6_acc_vs_maxtput.png`](projects/ICP/service/results/report/t6_acc_vs_maxtput.png) |
+| Plot: T7 Pareto | [`projects/ICP/service/results/t7/report/t7_pareto.png`](projects/ICP/service/results/t7/report/t7_pareto.png) |
+| Table: T6 | [`projects/ICP/service/results/report/t6_table.csv`](projects/ICP/service/results/report/t6_table.csv) |
+| Table: T7 | [`projects/ICP/service/results/t7/report/t7_configurations.csv`](projects/ICP/service/results/t7/report/t7_configurations.csv) |
+| Splits | [`projects/ICP/splits.json`](projects/ICP/splits.json) |
+| Demo | [`projects/ICP/service/demo.sh`](projects/ICP/service/demo.sh) |
 
+### How to reproduce
 
-**Teamwork:** You will work on this project in your assigned teams. As a team, you will use a shared GitHub repository and a virtual machine to coordinate your work. Please establish a way of communication and collaboration that works for your team -- for example, a Teams channel. Please agree on tasks and responsibilities. We expect that team members will have different backgrounds and different amounts of experience with machine learning and engineering -- this is intentional. Use the first milestone to identify strength and weaknesses, fill missing gaps in background knowledge, and teach each other about tools and practices that are effective for this task. Finally, be a good team citizen.
+From `projects/ICP` on the VM:
 
-**Milestones:** For each milestone and the final presentation, there are separate deliverables, described below. The milestones are checkpoints to ensure that certain functionality has been delivered. 
+1. `docker build -f service/Dockerfile -t icp-ocr:dev .`
+2. `bash service/k8s/setup_vm.sh`
+3. `bash service/run_all.sh`
+4. `bash service/demo.sh` (or `--auto` / `--showcase`)
 
-Milestones are graded on a pass/fail scheme for the criteria listed with each milestone. A fail turns into a pass if it is achieved by the end of the next milestone. All milestones must be delivered by the final due date. 
-Note, Milestones build on each other. We recommend to look at all milestones before starting the project, as you may make different design decision and avoid extensive rework.
+Details: [`projects/ICP/service/README.md`](projects/ICP/service/README.md).
 
-**Pipelines:** The schematic for pipelines is here. Each pipeline has input datasets and variety of models for each stage. The SLA for each pipeline is provided at the end of the schematic. 
+---
 
-**Infrastructure:**  We provide *Dockerfiles* for each pipeline use case. The Dockerfile  specifies datasets and models to download. You should build the *Dockerfile* into a container and peruse the data and model files. Further details on how to use the Dockerfile are present in the projects directory.
+# Milestone 2: Deploying, Monitoring, and Profiling Pipeline Variants
 
->You may request more computing resources from the course staff if the virtual machine’s resources are insufficient -- we may or may not be able to accommodate such requests, it may take a few days, and will require a system reboot.
+*(from Milestone 2 v3)*
 
-**Data** You do not need to use all provided data. Identify what data is relevant. 
-> Shankar add more details once the data are identified. 
+## Learning Goals
 
+In Milestone 1 you built a working pipeline inside a notebook. In this milestone you turn that pipeline into a deployed, scalable, observable service and measure how configuration choices affect accuracy, latency, throughput, and cost.
 
-**Languages, tools, and frameworks:** Your team is free to chose any technology stack for any part of this project. You have root access to your virtual machine and are free to install any software you deem suitable. You also may use external data and services (e.g. cloud services) as long as you can make them also accessible to the course staff. For example, you can use the free cloud credits that companies like Microsoft, Google, and AWS provide to students for this project. Whenever you set up tools or services, pay some attention to configuring them with reasonable security measures; past student solutions have been actively exploited in past projects and this can lead to data loss or loss of internet access for your virtual machine.
+By the end of this milestone you should be able to answer:
 
-**Documentation** For all milestones, we ask you to discuss some aspects of your design decision and implementation. It may be a good idea to write general documentation that is useful for the team in a place that is shared and accessible to the team (e.g., README.md or wiki pages on GitHub). Conversely it may be a good idea to include text or figures you write for reports as part of the project documentation. Feel free to link to more detailed documentation from your report or simply copy material from existing documentation into the report.
+- Which stage of your pipeline is the bottleneck, and why?
+- How do model variant, batch size, and number of replicas trade off accuracy against latency, throughput, and cost?
+- Which configurations meet your SLA, and which of those is "best"?
+- Does the choice of model at an earlier stage change the best choice at a later stage?
 
-In general, we do not much care about the format or location of where we can find parts of your answers, such as code and screenshots, as long as we can find it. Please make an effort to be clear where to find content if it is not copied directly into the report, preferably with direct links to individual files or even lines
+The measurements you collect here are the input to the optimizer you will build in Milestone 3. Collect them carefully and make them reproducible.
 
+The Pipeline Evaluation Guide fixes, for each pipeline, the evaluation slices, load pool, offline accuracy metric, required assertions, and SLA unit. These are the same for every team on a pipeline, so that results are comparable. Read the common section and the section for your pipeline before starting.
 
-# Milestone 1
+## Tasks
 
-### Learning Goals: 
-The primary task is to set up multiple pipeline configurations, where in each pipeline configuration provides some result to compare pipelines. Note we do not care about the accuracy of fidelity of the result at this point. At this point we care 
-whether a pipe is functional or not. For example, in ID card processing, one pipeline configuration is [red channel, Tesseract, Classification-level-2]. Define the accuracy of this pipeline and compute it.  
-    
-### Tasks: 
+**T0. Close any Milestone 1 gaps.** If your Milestone 1 feedback lists any missing deliverables (a written report, a Dockerfile in your repository, implemented assertions, a repository link), please complete them under this milestone. Under the pass/fail rule, a Milestone 1 fail becomes a pass if it is fixed by the end of this milestone.
 
-T1. Meet with your team members. For this milestone it may be helpful to work on task individually for a
-while, and then get together to create one working notebook that is documented.
-Alternatively, you may decide to code up each conguration individually and then merge your
-congurations into a single pipeline. In either case, decide how you divide the work (minimum: who is
-going to do what and by when). Share team skills and responsibilities.
+**T1. Fix your evaluation harness.** Before profiling anything, make your accuracy numbers comparable.
 
-T2. Setup pipeline congurations in a Jupyter notebook. This is a complex task, which will require you
-to connect the input datasets to the rst step of the pipeline, the rst step to the second step, and so
-on, and nally output a basic accuracy number for the pipeline. We have provided one accuracy metric,
-which can be used as an assertion. It is upto you to think of other improved accuracy metrics and
-provide justication for their use. Once you have one single pipeline working, experiment by changing
-models at each step and set up as many pipeline congurations as possible.
-Run each pipeline conguration and obtain pipeline latency and accuracy. Report as a table for each
-conguration
+- Build the development slice and test slice exactly as defined in the guide for your pipeline, and save their IDs and the dataset version in your repository. Tune thresholds, label mappings, and settings such as top-k only on the development slice; report results only on the test slice.
+- Implement the primary offline accuracy metric and the other required metrics for your pipeline, and report the pipeline's baseline (both defined in the guide) next to them.
+- Implement the required assertions for your pipeline, tuning any thresholds with the guide's development-slice rule. You may add assertions of your own; justify each one. Assertions are checks that can run online, without labels.
+- Report, for your Milestone 1 configurations, both the offline accuracy and the assertion pass rate on the test slice. How well does the assertion pass rate track true accuracy? Do the two rank configurations the same way?
 
-T3. Write a report. In this report describe:
+If your Milestone 1 accuracy definition differs from the one in the guide, explain the difference and report both.
 
-- Write and submit a short report that describes the pipeline, its objective and architecture.
-Architecture includes description of datasets, models, and assertions used, and the resulting
-pipeline congurations.
+**T2. Create model variants.** Create at least four variants for each scalable stage of your pipeline (the guide lists which stages are scalable). Variants can come from:
 
-- Mention how many choices of datasets and models were used and the number of resulting
-pipeline configurations that are possible in your pipeline.
+- different model families or sizes (e.g., YOLOv8n/s/m, Whisper tiny/base/small);
+- quantization or graph optimization (e.g., ONNX Runtime dynamic INT8, OpenVINO). Note that TensorRT requires an NVIDIA GPU; on CPU-only VMs, use ONNX Runtime or OpenVINO instead;
+- input-side knobs (image resolution, chunk size and top-k, frame skipping).
 
-- For each pipeline configuration, report the accuracy (in terms of number of assertions), latency,
-and whether SLA was met, as a table. (We will release the SLAs for each pipeline soon.)
+Store every variant in a model registry such as MinIO, together with metadata: name, version, source, size on disk, and offline accuracy on the test slice.
 
-- Ensure that your notebook is well-documented starting with the name of the pipeline used, and
-report is detailed and understandable.
+**T3. Serve each stage as a separate service.** Containerize each stage as its own model server and connect stages with gRPC (guide). Each stage service must:
 
-- Briefly describe in your report how your team organizes itself. What communication channels do
-you use? How have you divided the work? Did you encounter any teamwork problems and what
-steps are you planning to take in future milestones to avoid them?
+- load its variant from the registry, selected by an environment variable or configuration so that it can be changed without rebuilding the image;
+- support a configurable batch size (requests wait in a queue up to a maximum batch size or a timeout);
+- expose a Prometheus `/metrics` endpoint with at least: request count, latency histogram, queue length, current batch size, and an assertion pass/fail counter.
 
+Video pipeline only: the tracker is stateful. Frames from one stream must reach the same tracker instance in order. Explain how you route frames (e.g., by stream ID).
 
-### Deliverables.
+**T4. Deploy on Kubernetes with monitoring.** Deploy your pipeline on Kubernetes on your VM (k3s, kind, or minikube is fine).
 
-1.  Submit your Notebook which consists of code for pipeline configurations to GitHub. Provide a Dockerfile of your container including the notebook on your Team GitHub and share with us for grading. Uncle the report on Github as well.
-   
-### Grading.
+- One Deployment per stage, with CPU and memory requests and limits set explicitly.
+- Scaling a stage must be a scripted operation (Kubernetes API or `kubectl scale`), not a manual step.
+- Run Prometheus and a Grafana dashboard showing, per stage: p50/p95/p99 latency, throughput, queue length, CPU usage, and assertion pass rate.
 
-This milestone is worth 10 points. 3 points for producing a notebook, 3 points for sharing a Dockerfile that is downloadable,  runnable into a container, and regenerating the results reported in the document. 4 points for the report that is clear, complete, and precise.
+**T5. Build a load generator and set your SLA.** Write an open-loop load generator: it sends requests at a target rate whether or not earlier requests have returned. (A closed-loop client that waits for each response hides queueing delay and will make your system look faster than it is.) Requests must be drawn from your pipeline's labeled load pool (defined in the guide), so that accuracy can be measured under load.
 
+Then set your SLA using the calibration procedure in the guide, and report it. The SLA is a latency objective (p95, in your pipeline's natural unit) plus a target request rate. It is set so that meeting it requires scaling beyond a single replica.
+
+**T6. Profile each stage.** For each scalable stage, sweep at least four variants × four resource configurations, and batch sizes of at least {1, 4, 8}. Cost is defined as replicas × CPU cores per replica. For each point, report:
+
+| Stage | Variant | Batch | Replicas | Cores/replica | Cost | p50 | p95 | p99 | throughput | Max throughput meeting SLO | Accuracy |
+|-------|---------|-------|----------|---------------|------|-----|-----|-----|------------|----------------------------|----------|
+
+Notes:
+
+- Run all profiling on the course VM's CPUs, with an explicit number of cores per replica. GPU or multi-process numbers may be reported in addition, clearly labeled, but not instead.
+- Cache upstream outputs when profiling a downstream stage. For example, transcribe or detect once per upstream variant and reuse the outputs, rather than recomputing them for every downstream variant.
+- Accuracy depends on the variant (and, for some pipelines, on batch-dependent input knobs). It does not change with the number of replicas. If it appears to, something is wrong with your measurement.
+- "Max throughput meeting SLO" is the highest request rate at which p95 latency stays within your SLO.
+- Break latency down into queueing time, inference time, and network/serialization time. Identify the bottleneck stage and explain it.
+
+**T7. Analyze end-to-end configurations.** Now combine stages.
+
+- Run end-to-end configurations (the full cross-product if it is small, or a well-chosen subset if not) on the test slice.
+- Run the gold-input ablation described in the guide: feed the downstream stage ground-truth input instead of upstream output, to measure how much error each stage contributes.
+- Plot all end-to-end configurations by cost and accuracy, mark which meet the SLA, and draw the Pareto front.
+- Answer: Do multiple configurations meet the SLA? What makes one "optimal", and is that a single answer or does it depend on the load? Does the upstream choice change the best downstream choice? Support your answer with numbers.
+
+## Deliverables (assignment)
+
+1. **Code** in your team repository:
+   - a Dockerfile per stage service;
+   - Kubernetes manifests, the Prometheus configuration, and the Grafana dashboard JSON;
+   - the load generator;
+   - a single entry point (e.g., `make profile` or `run_profile.sh`) that regenerates every table and plot in your report. A notebook may drive these scripts, but the scaling logic must be in code, not manual steps.
+2. **Plots:**
+   - accuracy vs. p95 latency per variant;
+   - accuracy vs. max throughput per variant;
+   - the end-to-end cost–accuracy Pareto plot from T7.
+3. **Tables:** the per-stage profiling table (T6) and the end-to-end configuration table (T7).
+4. **Report** covering T0–T7. Conclude with which configuration you would deploy at your SLA's target rate, and at what cost, taking both the SLA and accuracy into account.
+5. **Project presentation** of your work through Milestone 2.
+
+## Grading
+
+This milestone is worth 100 points.
+
+- 20 points: evaluation harness and assertions (T1).
+- 30 points: model variants, services, gRPC, Kubernetes deployment, and monitoring are runnable from your repository (T2–T5).
+- 20 points: profiling tables and plots are regenerated by your entry point (T6–T7).
+- 30 points: report and presentation. Analysis is clear, complete, precise, and supported by your measurements (T6–T7).
+
+---
+
+## Milestone 1 (archive)
+
+| Item | Path |
+|------|------|
+| Report | [`Slides and Report/CS8001_06_Milestone_1_Report.pdf`](Slides%20and%20Report/CS8001_06_Milestone_1_Report.pdf) |
+| Slides | [`Slides and Report/ICPMilestone1.pptx`](Slides%20and%20Report/ICPMilestone1.pptx) |
