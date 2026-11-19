@@ -42,8 +42,6 @@ Details: [`projects/ICP/service/README.md`](projects/ICP/service/README.md).
 
 # Milestone 2: Deploying, Monitoring, and Profiling Pipeline Variants
 
-*(from Milestone 2 v3)*
-
 ## Learning Goals
 
 In Milestone 1 you built a working pipeline inside a notebook. In this milestone you turn that pipeline into a deployed, scalable, observable service and measure how configuration choices affect accuracy, latency, throughput, and cost.
